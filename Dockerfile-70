@@ -1,10 +1,6 @@
 FROM drupaldocker/php:7.0-cli-2.x
 MAINTAINER eiriksm <eirik@morland.no>
-COPY . /usr/src/myapp
-WORKDIR /usr/src/myapp
 
-ARG COMPOSER_VERSION=1
-ENV COMPOSER_VERSION=$COMPOSER_VERSION
 ENV COMPOSER_DISCARD_CHANGES=1
 ENV COMPOSER_MEMORY_LIMIT=-1
 ENV COMPOSER_ALLOW_SUPERUSER=1
@@ -18,7 +14,6 @@ RUN composer self-update \
     && docker-php-ext-install exif bz2 pcntl intl \
     && docker-php-ext-enable apcu intl mongodb imagick \
     && mkdir ~/.ssh/ \
-    && composer install --no-dev --optimize-autoloader \
     && ssh-keyscan -t rsa,dsa git.drupal.org >> ~/.ssh/known_hosts \
     && ssh-keyscan -t rsa,dsa gitlab.com >> ~/.ssh/known_hosts \
     && ssh-keyscan -t rsa,dsa bitbucket.org >> ~/.ssh/known_hosts \
@@ -30,6 +25,3 @@ RUN composer self-update \
     && gzip -d /tmp/symfony.gz \
     && chmod 755 /tmp/symfony \
     && mv /tmp/symfony /usr/local/bin/symfony \
-    && rm -rf /usr/local/bin/composer
-
-CMD ["php", "runner.php"]
