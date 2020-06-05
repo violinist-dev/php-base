@@ -1,0 +1,12 @@
+FROM drupaldocker/php:7.0-cli-2.x
+MAINTAINER eiriksm <eirik@morland.no>
+
+ENV COMPOSER_DISCARD_CHANGES=1
+ENV COMPOSER_MEMORY_LIMIT=-1
+ENV COMPOSER_ALLOW_SUPERUSER=1
+ENV COMPOSER_PROCESS_TIMEOUT=1200
+ENV DRUPAL_CONTRIB_SA_PATH=/root/drupal-contrib-sa
+
+COPY ./php-install.sh /root/
+
+RUN /bin/sh /root/php-install.sh
