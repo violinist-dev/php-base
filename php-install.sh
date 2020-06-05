@@ -1,4 +1,4 @@
-
+set -eu
 
 composer self-update \
     && composer global require hirak/prestissimo \
@@ -17,4 +17,5 @@ composer self-update \
     && wget https://get.symfony.com/cli/v4.5.4/symfony_linux_amd64 -O /tmp/symfony.gz \
     && gzip -d /tmp/symfony.gz \
     && chmod 755 /tmp/symfony \
-    && mv /tmp/symfony /usr/local/bin/symfony \
+    && mv /tmp/symfony /usr/local/bin/symfony
+exit 1
