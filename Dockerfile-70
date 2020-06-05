@@ -20,7 +20,6 @@ RUN composer self-update \
     && ssh-keyscan -t rsa,dsa github.com >> ~/.ssh/known_hosts \
     && git clone https://github.com/FriendsOfPHP/security-advisories /root/.symfony/cache/security-advisories \
     && git clone https://github.com/violinist-dev/drupal-contrib-sa /root/drupal-contrib-sa \
-    && echo "DRUPAL_CONTRIB_SA_PATH=/root/drupal-contrib-sa" > /usr/src/myapp/.env \
     && wget https://get.symfony.com/cli/v4.5.4/symfony_linux_amd64 -O /tmp/symfony.gz \
     && gzip -d /tmp/symfony.gz \
     && chmod 755 /tmp/symfony \
