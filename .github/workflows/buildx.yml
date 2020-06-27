@@ -37,15 +37,10 @@ jobs:
         name: Docker Buildx (build)
         run: |
           docker buildx build --output "type=image,push=true" ${{ steps.prepare.outputs.buildx_args }} -t violinist/php-base:7.0-multi -f Dockerfile-70 .
-          docker buildx build --output "type=image,push=false" ${{ steps.prepare.outputs.buildx_args }} -t violinist/php-base:7.1-multi -f Dockerfile-71 .
-          docker buildx build --output "type=image,push=false" ${{ steps.prepare.outputs.buildx_args }} -t violinist/php-base:7.2-multi -f Dockerfile-72 .
-          docker buildx build --output "type=image,push=false" ${{ steps.prepare.outputs.buildx_args }} -t violinist/php-base:7.3-multi -f Dockerfile-73 .
-          docker buildx build --output "type=image,push=false" ${{ steps.prepare.outputs.buildx_args }} -t violinist/php-base:7.4-multi -f Dockerfile-74 .
-      -
-        name: Docker Buildx (push)
-        if: success() && github.event_name != 'pull_request'
-        run: |
-          docker buildx build --output "type=image,push=true" ${{ steps.prepare.outputs.buildx_args }}
+          docker buildx build --output "type=image,push=true" ${{ steps.prepare.outputs.buildx_args }} -t violinist/php-base:7.1-multi -f Dockerfile-71 .
+          docker buildx build --output "type=image,push=true" ${{ steps.prepare.outputs.buildx_args }} -t violinist/php-base:7.2-multi -f Dockerfile-72 .
+          docker buildx build --output "type=image,push=true" ${{ steps.prepare.outputs.buildx_args }} -t violinist/php-base:7.3-multi -f Dockerfile-73 .
+          docker buildx build --output "type=image,push=true" ${{ steps.prepare.outputs.buildx_args }} -t violinist/php-base:7.4-multi -f Dockerfile-74 .
       -
         name: Docker Check Manifest
         if: always() && github.event_name != 'pull_request'
