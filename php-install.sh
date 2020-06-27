@@ -39,4 +39,3 @@ wget https://github.com/symfony/cli/releases/download/v4.16.3/symfony_linux_${ma
     && gzip -d /tmp/symfony.gz \
     && chmod 755 /tmp/symfony \
     && mv /tmp/symfony /usr/local/bin/symfony
-exit 1
