@@ -13,6 +13,7 @@ curl -sS https://getcomposer.org/installer | php \
 composer self-update \
     && composer global require hirak/prestissimo \
     && mkdir ~/.ssh/ \
+    && docker-php-ext-install exif \
     && ssh-keyscan -t rsa,dsa git.drupal.org >> ~/.ssh/known_hosts \
     && ssh-keyscan -t rsa,dsa gitlab.com >> ~/.ssh/known_hosts \
     && ssh-keyscan -t rsa,dsa bitbucket.org >> ~/.ssh/known_hosts \
