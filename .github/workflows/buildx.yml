@@ -21,8 +21,7 @@ jobs:
           echo ::set-output name=docker_image::${DOCKER_IMAGE}
           echo ::set-output name=buildx_args::--platform ${DOCKER_PLATFORMS} \
             --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ') \
-            --build-arg VCS_REF=${GITHUB_SHA::8} \
-            ${TAGS} --file ./test/Dockerfile ./test
+            --build-arg VCS_REF=${GITHUB_SHA::8}
       -
         name: Set up Docker Buildx
         uses: crazy-max/ghaction-docker-buildx@v3
@@ -37,11 +36,11 @@ jobs:
       -
         name: Docker Buildx (build)
         run: |
-          docker buildx build --output "type=image,push=true" ${{ steps.prepare.outputs.buildx_args }} -t violinist/php-base:7.0-multi -f Dockerfile-70
-          docker buildx build --output "type=image,push=false" ${{ steps.prepare.outputs.buildx_args }} -t violinist/php-base:7.1-multi -f Dockerfile-71
-          docker buildx build --output "type=image,push=false" ${{ steps.prepare.outputs.buildx_args }} -t violinist/php-base:7.2-multi -f Dockerfile-72
-          docker buildx build --output "type=image,push=false" ${{ steps.prepare.outputs.buildx_args }} -t violinist/php-base:7.3-multi -f Dockerfile-73
-          docker buildx build --output "type=image,push=false" ${{ steps.prepare.outputs.buildx_args }} -t violinist/php-base:7.4-multi -f Dockerfile-74
+          docker buildx build --output "type=image,push=true" ${{ steps.prepare.outputs.buildx_args }} -t violinist/php-base:7.0-multi -f Dockerfile-70 .
+          docker buildx build --output "type=image,push=false" ${{ steps.prepare.outputs.buildx_args }} -t violinist/php-base:7.1-multi -f Dockerfile-71 .
+          docker buildx build --output "type=image,push=false" ${{ steps.prepare.outputs.buildx_args }} -t violinist/php-base:7.2-multi -f Dockerfile-72 .
+          docker buildx build --output "type=image,push=false" ${{ steps.prepare.outputs.buildx_args }} -t violinist/php-base:7.3-multi -f Dockerfile-73 .
+          docker buildx build --output "type=image,push=false" ${{ steps.prepare.outputs.buildx_args }} -t violinist/php-base:7.4-multi -f Dockerfile-74 .
       -
         name: Docker Buildx (push)
         if: success() && github.event_name != 'pull_request'
