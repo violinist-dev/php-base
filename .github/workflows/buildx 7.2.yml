@@ -1,4 +1,4 @@
-name: buildx
+name: buildx 7.2
 
 on:
   - push
@@ -36,20 +36,12 @@ jobs:
       -
         name: Docker Buildx (build)
         run: |
-          docker buildx build --output "type=image,push=true" ${{ steps.prepare.outputs.buildx_args }} -t violinist/php-base:7.0-multi -f Dockerfile-70 .
-          docker buildx build --output "type=image,push=true" ${{ steps.prepare.outputs.buildx_args }} -t violinist/php-base:7.1-multi -f Dockerfile-71 .
           docker buildx build --output "type=image,push=true" ${{ steps.prepare.outputs.buildx_args }} -t violinist/php-base:7.2-multi -f Dockerfile-72 .
-          docker buildx build --output "type=image,push=true" ${{ steps.prepare.outputs.buildx_args }} -t violinist/php-base:7.3-multi -f Dockerfile-73 .
-          docker buildx build --output "type=image,push=true" ${{ steps.prepare.outputs.buildx_args }} -t violinist/php-base:7.4-multi -f Dockerfile-74 .
       -
         name: Docker Check Manifest
         if: always() && github.event_name != 'pull_request'
         run: |
-          docker run --rm mplatform/mquery ${{ steps.prepare.outputs.docker_image }}:7.0-multi
-          docker run --rm mplatform/mquery ${{ steps.prepare.outputs.docker_image }}:7.1-multi
           docker run --rm mplatform/mquery ${{ steps.prepare.outputs.docker_image }}:7.2-multi
-          docker run --rm mplatform/mquery ${{ steps.prepare.outputs.docker_image }}:7.3-multi
-          docker run --rm mplatform/mquery ${{ steps.prepare.outputs.docker_image }}:7.4-multi
       -
         name: Clear
         if: always() && github.event_name != 'pull_request'
