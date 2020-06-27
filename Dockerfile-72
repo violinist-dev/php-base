@@ -1,4 +1,4 @@
-FROM drupaldocker/php:7.0-cli-2.x
+FROM php:7.2-alpine
 MAINTAINER eiriksm <eirik@morland.no>
 
 ENV COMPOSER_DISCARD_CHANGES=1
