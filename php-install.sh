@@ -3,11 +3,10 @@ set -eu
 apk add --no-cache sudo git libpng libjpeg libpq libxml2 mysql-client openssh-client rsync patch bash imagemagick \
     imagemagick-libs imagemagick-dev autoconf g++ make icu-dev libpng-dev libjpeg-turbo-dev postgresql-dev libxml2-dev bzip2-dev $PHPIZE_DEPS \
   && docker-php-ext-configure gd intl --with-png-dir=/usr --with-jpeg-dir=/usr --enable-intl \
-  && docker-php-ext-install gd mbstring pdo_mysql pdo_pgsql zip \
-  && docker-php-ext-install opcache bcmath soap exif bz2 pcntl intl \
-  && yes | pecl install install apcu mongodb imagick redis-3.1.1 \
-  && docker-php-ext-enable apcu intl mongodb imagick redis
+  && docker-php-ext-install gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl intl \
+  && docker-php-ext-enable apcu intl mongodb imagick redis exif
 
+yes | pecl install install apcu mongodb imagick redis-3.1.1
 curl -sS https://getcomposer.org/installer | php \
   && mv composer.phar /usr/local/bin/composer
 
