@@ -35,7 +35,7 @@ case ${machine} in
         ;;
 esac
 
-wget https://github.com/symfony/cli/releases/download/v4.16.3/symfony_linux_${platform}.gz -O /tmp/symfony.gz \
+wget https://github.com/symfony/cli/releases/download/v4.16.3/symfony_linux_${machine}.gz -O /tmp/symfony.gz \
     && gzip -d /tmp/symfony.gz \
     && chmod 755 /tmp/symfony \
     && mv /tmp/symfony /usr/local/bin/symfony
