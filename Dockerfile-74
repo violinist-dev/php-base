@@ -10,5 +10,6 @@ ENV DRUPAL_CONTRIB_SA_PATH=/root/drupal-contrib-sa
 ENV PHP_VERSION=7.4
 
 COPY ./php-install.sh /root/
+COPY php-base.ini /usr/local/etc/php/conf.d/
 
 RUN /bin/sh /root/php-install.sh
