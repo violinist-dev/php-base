@@ -4,7 +4,7 @@ apk add --no-cache sudo git libpng libjpeg libpq libxml2 mysql-client openssh-cl
     imagemagick-libs imagemagick-dev autoconf g++ make icu-dev libpng-dev libjpeg-turbo-dev postgresql-dev libxml2-dev bzip2-dev $PHPIZE_DEPS \
   && docker-php-ext-configure gd intl --with-png-dir=/usr --with-jpeg-dir=/usr --enable-intl \
   && docker-php-ext-install gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl intl \
-  && docker-php-ext-enable apcu intl mongodb imagick redis exif
+  && docker-php-ext-enable apcu intl mongodb imagick redis exif gd
 
 yes | pecl install install apcu mongodb imagick redis-3.1.1
 curl -sS https://getcomposer.org/installer | php \
@@ -13,7 +13,7 @@ curl -sS https://getcomposer.org/installer | php \
 composer self-update \
     && composer global require hirak/prestissimo \
     && mkdir ~/.ssh/ \
-    && docker-php-ext-install exif \
+    && docker-php-ext-install exif gd \
     && ssh-keyscan -t rsa,dsa git.drupal.org >> ~/.ssh/known_hosts \
     && ssh-keyscan -t rsa,dsa gitlab.com >> ~/.ssh/known_hosts \
     && ssh-keyscan -t rsa,dsa bitbucket.org >> ~/.ssh/known_hosts \
