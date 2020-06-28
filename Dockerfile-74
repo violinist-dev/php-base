@@ -7,6 +7,8 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 ENV COMPOSER_PROCESS_TIMEOUT=1200
 ENV DRUPAL_CONTRIB_SA_PATH=/root/drupal-contrib-sa
 
+ENV USE_ALTERNATIVE_GD_SYNTAX=1
+
 COPY ./php-install.sh /root/
 
 RUN /bin/sh /root/php-install.sh

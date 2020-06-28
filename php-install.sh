@@ -1,6 +1,6 @@
 set -eu
 
-apk add --no-cache sudo git libpng libjpeg libpq libxml2 mysql-client openssh-client rsync patch bash imagemagick \
+apk add --no-cache sudo git libpng libjpeg libpq libxml2 mysql-client openssh-client rsync patch bash imagemagick libzip-dev \
     imagemagick-libs imagemagick-dev autoconf g++ make icu-dev libpng-dev libjpeg-turbo-dev postgresql-dev libxml2-dev bzip2-dev icu icu-dev $PHPIZE_DEPS
 
 pecl install igbinary
@@ -9,7 +9,12 @@ yes | pecl install apcu mongodb imagick redis-3.1.1
 docker-php-ext-configure intl
 docker-php-ext-install intl
 docker-php-ext-enable intl
-docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr
+if [ -z "$USE_ALTERNATIVE_GD_SYNTAX" ]
+then
+    docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr
+else
+    docker-php-ext-configure gd --with-jpeg=/usr
+fi
 docker-php-ext-install gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl intl
 docker-php-ext-enable apcu mongodb imagick redis exif gd
 
