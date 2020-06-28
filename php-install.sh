@@ -1,19 +1,25 @@
 set -eu
 
 apk add --no-cache sudo git libpng libjpeg libpq libxml2 mysql-client openssh-client rsync patch bash imagemagick \
-    imagemagick-libs imagemagick-dev autoconf g++ make icu-dev libpng-dev libjpeg-turbo-dev postgresql-dev libxml2-dev bzip2-dev $PHPIZE_DEPS \
-  && docker-php-ext-configure gd intl --with-png-dir=/usr --with-jpeg-dir=/usr --enable-intl \
-  && docker-php-ext-install gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl intl \
-  && docker-php-ext-enable apcu intl mongodb imagick redis exif gd
+    imagemagick-libs imagemagick-dev autoconf g++ make icu-dev libpng-dev libjpeg-turbo-dev postgresql-dev libxml2-dev bzip2-dev icu icu-dev $PHPIZE_DEPS
 
-yes | pecl install install apcu mongodb imagick redis-3.1.1
+pecl install igbinary
+yes | pecl install apcu mongodb imagick redis-3.1.1
+
+docker-php-ext-configure intl
+docker-php-ext-install intl
+docker-php-ext-enable intl
+docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr
+docker-php-ext-install gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl intl
+docker-php-ext-enable apcu mongodb imagick redis exif gd
+
 curl -sS https://getcomposer.org/installer | php \
   && mv composer.phar /usr/local/bin/composer
 
 composer self-update \
     && composer global require hirak/prestissimo \
     && mkdir ~/.ssh/ \
-    && docker-php-ext-install exif gd \
+    && docker-php-ext-install redis exif gd \
     && ssh-keyscan -t rsa,dsa git.drupal.org >> ~/.ssh/known_hosts \
     && ssh-keyscan -t rsa,dsa gitlab.com >> ~/.ssh/known_hosts \
     && ssh-keyscan -t rsa,dsa bitbucket.org >> ~/.ssh/known_hosts \
