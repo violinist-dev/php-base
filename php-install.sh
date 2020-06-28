@@ -9,11 +9,12 @@ yes | pecl install apcu mongodb imagick redis-3.1.1
 docker-php-ext-configure intl
 docker-php-ext-install intl
 docker-php-ext-enable intl
-if [ -z "$USE_ALTERNATIVE_GD_SYNTAX" ]
+if [ PHP_VERSION = "7.4" ]
 then
-    docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr
-else
+    apk add --no-cache oniguruma-dev
     docker-php-ext-configure gd --with-jpeg=/usr
+else
+    docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr
 fi
 docker-php-ext-install gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl intl
 docker-php-ext-enable apcu mongodb imagick redis exif gd
