@@ -22,14 +22,14 @@ docker-php-ext-enable apcu mongodb imagick redis exif gd
 curl -sS https://getcomposer.org/installer | php \
   && mv composer.phar /usr/local/bin/composer
 
-composer self-update \
-    && composer global require hirak/prestissimo \
-    && mkdir ~/.ssh/
+composer self-update
+composer global require hirak/prestissimo
 
-ssh-keyscan -t rsa,dsa git.drupal.org >> ~/.ssh/known_hosts \
-    && ssh-keyscan -t rsa,dsa gitlab.com >> ~/.ssh/known_hosts \
-    && ssh-keyscan -t rsa,dsa bitbucket.org >> ~/.ssh/known_hosts \
-    && ssh-keyscan -t rsa,dsa github.com >> ~/.ssh/known_hosts
+mkdir ~/.ssh/
+ssh-keyscan -t rsa,dsa git.drupal.org >> ~/.ssh/known_hosts
+ssh-keyscan -t rsa,dsa gitlab.com >> ~/.ssh/known_hosts
+ssh-keyscan -t rsa,dsa bitbucket.org >> ~/.ssh/known_hosts
+ssh-keyscan -t rsa,dsa github.com >> ~/.ssh/known_hosts
 
 git clone https://github.com/FriendsOfPHP/security-advisories /root/.symfony/cache/security-advisories
 git clone https://github.com/violinist-dev/drupal-contrib-sa /root/drupal-contrib-sa
@@ -54,7 +54,7 @@ case ${machine} in
         ;;
 esac
 
-wget https://github.com/symfony/cli/releases/download/v4.16.3/symfony_linux_${machine}.gz -O /tmp/symfony.gz \
-    && gzip -d /tmp/symfony.gz \
-    && chmod 755 /tmp/symfony \
-    && mv /tmp/symfony /usr/local/bin/symfony
+wget https://github.com/symfony/cli/releases/download/v4.16.3/symfony_linux_${machine}.gz -O /tmp/symfony.gz
+gzip -d /tmp/symfony.gz
+chmod 755 /tmp/symfony
+mv /tmp/symfony /usr/local/bin/symfony
