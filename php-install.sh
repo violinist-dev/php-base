@@ -9,7 +9,7 @@ yes | pecl install apcu mongodb imagick redis-3.1.1
 docker-php-ext-configure intl
 docker-php-ext-install intl
 docker-php-ext-enable intl
-if [ PHP_VERSION = "7.4" ]
+if [ $PHP_VERSION = "7.4" ]
 then
     apk add --no-cache oniguruma-dev
     docker-php-ext-configure gd --with-jpeg=/usr
