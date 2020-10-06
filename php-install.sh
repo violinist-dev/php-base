@@ -3,8 +3,15 @@ set -eu
 apk add --no-cache imap-dev sudo git libpng libjpeg libpq libxml2 mysql-client openssh-client rsync patch bash imagemagick libzip-dev \
     imagemagick-libs imagemagick-dev autoconf g++ make icu-dev libpng-dev libjpeg-turbo-dev postgresql-dev libxml2-dev bzip2-dev icu icu-dev $PHPIZE_DEPS
 
-pecl install igbinary
-yes | pecl install apcu mongodb imagick redis-3.1.1
+if [ $PHP_VERSION = "8.0" ]
+then
+    wget https://github.com/FriendsOfPHP/pickle/releases/download/v0.6.0/pickle.phar && mv pickle.phar /usr/local/bin/pickle
+    chmod +x /usr/local/bin/pickle
+    pickle install igbinary apcu mongodb imagick redis-3.1.1
+else
+    pecl install igbinary
+    yes | pecl install apcu mongodb imagick redis-3.1.1
+fi
 
 docker-php-ext-configure intl
 docker-php-ext-install intl
