@@ -12,7 +12,7 @@ then
     pickle install apcu
     echo -e "no\nno\nno\nno\nno\nno" | pickle install mongodb
     pickle install imagick
-    pickle install redis
+    mkdir -p /usr/src/php/ext/redis && curl -fsSL https://pecl.php.net/get/redis | tar xvz -C "/usr/src/php/ext/redis" --strip 1 && docker-php-ext-install redis
 else
     pecl install igbinary
     yes | pecl install apcu mongodb imagick redis-3.1.1
@@ -31,7 +31,7 @@ fi
 docker-php-ext-install imap gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl intl
 if [ $PHP_VERSION = "8.0" ]
 then
-    docker-php-ext-enable apcu exif gd
+    docker-php-ext-enable apcu redis exif gd
 else
     docker-php-ext-enable apcu mongodb imagick redis exif gd
 fi
