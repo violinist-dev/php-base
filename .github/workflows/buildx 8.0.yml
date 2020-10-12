@@ -1,4 +1,4 @@
-name: buildx 7.4
+name: buildx 8.0
 
 on:
   schedule:
@@ -38,12 +38,12 @@ jobs:
       -
         name: Docker Buildx (build)
         run: |
-          docker buildx build --output "type=image,push=true" ${{ steps.prepare.outputs.buildx_args }} -t violinist/php-base:7.4-multi -f Dockerfile-74 .
+          docker buildx build --output "type=image,push=true" ${{ steps.prepare.outputs.buildx_args }} -t violinist/php-base:8.0-multi -f Dockerfile-80 .
       -
         name: Docker Check Manifest
         if: always() && github.event_name != 'pull_request'
         run: |
-          docker run --rm mplatform/mquery ${{ steps.prepare.outputs.docker_image }}:7.4-multi
+          docker run --rm mplatform/mquery ${{ steps.prepare.outputs.docker_image }}:8.0-multi
       -
         name: Clear
         if: always() && github.event_name != 'pull_request'
