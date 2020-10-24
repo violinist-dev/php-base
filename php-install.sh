@@ -39,7 +39,7 @@ fi
 curl -sS https://getcomposer.org/installer | php \
   && mv composer.phar /usr/local/bin/composer
 
-composer self-update
+composer self-update --1
 composer global require hirak/prestissimo
 
 mkdir ~/.ssh/
