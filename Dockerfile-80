@@ -1,4 +1,4 @@
-FROM php:8.0.0RC2-alpine
+FROM php:8.0-alpine
 MAINTAINER eiriksm <eirik@morland.no>
 
 ENV COMPOSER_DISCARD_CHANGES=1
