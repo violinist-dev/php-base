@@ -1,4 +1,6 @@
 shared: &shared
+  docker:
+    - image: alpine
   steps:
     - checkout
     - setup_remote_docker:
@@ -16,38 +18,26 @@ jobs:
     environment:
       PHP_VERSION: 70
       COMPOSER_VERSION: 1
-    docker:
-      - image: ubuntu
     <<: *shared
   "php71":
     environment:
       PHP_VERSION: 71
-    docker:
-      - image: ubuntu
     <<: *shared
   "php72":
     environment:
       PHP_VERSION: 72
-    docker:
-      - image: ubuntu
     <<: *shared
   "php73":
     environment:
       PHP_VERSION: 73
-    docker:
-      - image: ubuntu
     <<: *shared
   "php74":
     environment:
       PHP_VERSION: 74
-    docker:
-      - image: ubuntu
     <<: *shared
   "php80":
     environment:
       PHP_VERSION: 80
-    docker:
-      - image: ubuntu
     <<: *shared
 
 workflows:
