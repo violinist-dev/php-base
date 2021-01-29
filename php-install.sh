@@ -8,7 +8,7 @@ then
     docker-php-ext-install zip
     wget https://github.com/FriendsOfPHP/pickle/releases/download/v0.6.0/pickle.phar && mv pickle.phar /usr/local/bin/pickle
     chmod +x /usr/local/bin/pickle
-    pickle install igbinary
+    pickle install igbinary@3.2.1
     pickle install apcu
     echo -e "no\nno\nno\nno\nno\nno" | pickle install mongodb
     pickle install imagick
