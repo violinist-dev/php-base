@@ -10,8 +10,11 @@ then
     chmod +x /usr/local/bin/pickle
     pickle install igbinary@3.2.1
     pickle install apcu
-    echo -e "no\nno\nno\nno\nno\nno" | pickle install mongodb
-    pickle install imagick
+    echo -e "no\nno\nno\nno\nno\nno" | pickle install -n mongodb
+    # Use imagick from source for now.
+    mkdir -p /usr/src/php/ext/imagick; \
+        curl -fsSL https://github.com/Imagick/imagick/archive/06116aa24b76edaf6b1693198f79e6c295eda8a9.tar.gz | tar xvz -C "/usr/src/php/ext/imagick" --strip 1; \
+        docker-php-ext-install imagick
     mkdir -p /usr/src/php/ext/redis && curl -fsSL https://pecl.php.net/get/redis | tar xvz -C "/usr/src/php/ext/redis" --strip 1 && docker-php-ext-install redis
 else
     pecl install igbinary
@@ -29,12 +32,6 @@ else
     docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr
 fi
 docker-php-ext-install imap gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl intl
-if [ $PHP_VERSION = "8.0" ]
-then
-    docker-php-ext-enable apcu redis exif gd
-else
-    docker-php-ext-enable apcu mongodb imagick redis exif gd
-fi
 
 curl -sS https://getcomposer.org/installer | php \
   && mv composer.phar /usr/local/bin/composer
