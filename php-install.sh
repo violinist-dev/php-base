@@ -21,6 +21,8 @@ else
     yes | pecl install apcu mongodb imagick redis-3.1.1
 fi
 
+docker-php-ext-enable apcu mongodb imagick redis exif gd
+
 docker-php-ext-configure intl
 docker-php-ext-install intl
 docker-php-ext-enable intl
