@@ -3,22 +3,17 @@ set -eu
 apk add --no-cache imap-dev sudo git libpng libjpeg libpq libxml2 mysql-client openssh-client rsync patch bash imagemagick libzip-dev \
     imagemagick-libs imagemagick-dev autoconf g++ make icu-dev libpng-dev libjpeg-turbo-dev postgresql-dev libxml2-dev bzip2-dev icu icu-dev $PHPIZE_DEPS
 
+yes | pecl install apcu mongodb igbinary
+
 if [ $PHP_VERSION = "8.0" ]
 then
-    docker-php-ext-install zip
-    wget https://github.com/FriendsOfPHP/pickle/releases/download/v0.6.0/pickle.phar && mv pickle.phar /usr/local/bin/pickle
-    chmod +x /usr/local/bin/pickle
-    pickle install igbinary@3.2.1
-    pickle install apcu
-    echo -e "no\nno\nno\nno\nno\nno" | pickle install -n mongodb
     # Use imagick from source for now.
     mkdir -p /usr/src/php/ext/imagick; \
         curl -fsSL https://github.com/Imagick/imagick/archive/06116aa24b76edaf6b1693198f79e6c295eda8a9.tar.gz | tar xvz -C "/usr/src/php/ext/imagick" --strip 1; \
         docker-php-ext-install imagick
     mkdir -p /usr/src/php/ext/redis && curl -fsSL https://pecl.php.net/get/redis | tar xvz -C "/usr/src/php/ext/redis" --strip 1 && docker-php-ext-install redis
 else
-    pecl install igbinary
-    yes | pecl install apcu mongodb imagick redis-3.1.1
+    yes | pecl install imagick redis-3.1.1
 fi
 
 docker-php-ext-configure intl
