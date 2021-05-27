@@ -4,7 +4,7 @@ apk add --no-cache imap-dev sudo git libpng libjpeg libpq libxml2 mysql-client o
     imagemagick-libs imagemagick-dev autoconf g++ make icu-dev libpng-dev libjpeg-turbo-dev postgresql-dev libxml2-dev bzip2-dev icu icu-dev libmemcached-dev $PHPIZE_DEPS
 
 yes | pecl install apcu mongodb igbinary
-no | pecl install memcached
+echo "" | pecl install memcached
 
 if [ $PHP_VERSION = "8.0" ]
 then
