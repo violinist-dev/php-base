@@ -3,7 +3,15 @@ set -eu
 apk add --no-cache imap-dev sudo git libpng libjpeg libpq libxml2 mysql-client openssh-client rsync patch bash imagemagick libzip-dev \
     imagemagick-libs imagemagick-dev autoconf g++ make icu-dev libpng-dev libjpeg-turbo-dev postgresql-dev libxml2-dev bzip2-dev icu icu-dev libmemcached-dev $PHPIZE_DEPS
 
-yes | pecl install apcu mongodb igbinary
+if [ $PHP_VERSION = "7.0" ]
+then
+    # Use older mongodb.
+    yes | pecl install mongodb-1.9.1
+else
+    yes | pecl install mongodb
+fi
+
+yes | pecl install apcu igbinary
 echo "" | pecl install memcached
 
 if [ $PHP_VERSION = "8.0" ]
