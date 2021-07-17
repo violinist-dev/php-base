@@ -1,4 +1,4 @@
-FROM php:7.0-alpine
+FROM php:7.0-alpine3.13
 MAINTAINER eiriksm <eirik@morland.no>
 
 ENV COMPOSER_DISCARD_CHANGES=1
