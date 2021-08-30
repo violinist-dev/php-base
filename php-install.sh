@@ -42,7 +42,6 @@ curl -sS https://getcomposer.org/installer | php \
   && mv composer.phar /usr/local/bin/composer
 
 composer self-update --1
-composer global require hirak/prestissimo
 
 mkdir ~/.ssh/
 ssh-keyscan -t rsa,dsa git.drupal.org >> ~/.ssh/known_hosts
