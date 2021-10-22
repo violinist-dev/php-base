@@ -8,13 +8,18 @@ then
     # Use older mongodb.
     yes | pecl install mongodb-1.9.1
 else
-    yes | pecl install mongodb
+    if [ $PHP_VERSION = "8.1" ]
+    then
+        echo "skipping mongodb"
+    else
+        yes | pecl install mongodb
+    fi
 fi
 
 yes | pecl install apcu igbinary
 echo "" | pecl install memcached
 
-if [ $PHP_VERSION = "8.0" ]
+if [ $PHP_VERSION = "8.0" ] || [ $PHP_VERSION = "8.1" ]
 then
     # Use imagick from source for now.
     mkdir -p /usr/src/php/ext/imagick; \
@@ -28,7 +33,7 @@ fi
 docker-php-ext-configure intl
 docker-php-ext-install intl
 docker-php-ext-enable intl
-if [ $PHP_VERSION = "7.4" ] || [ $PHP_VERSION = "8.0" ]
+if [ $PHP_VERSION = "7.4" ] || [ $PHP_VERSION = "8.0" ] || [ $PHP_VERSION = "8.1" ]
 then
     apk add --no-cache oniguruma-dev
     docker-php-ext-configure gd --with-jpeg=/usr
