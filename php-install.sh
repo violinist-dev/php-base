@@ -19,7 +19,7 @@ fi
 
 if [ $PHP_VERSION = "8.1" ]
 then
-    yes | pecl install igbinary
+    echo "skipping apcu,igbinary"
 else
     yes | pecl install apcu igbinary
 fi
