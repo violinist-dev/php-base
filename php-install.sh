@@ -44,6 +44,7 @@ fi
 docker-php-ext-install imap gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl intl
 docker-php-ext-enable memcached apcu imagick redis exif gd
 if [ $PHP_VERSION = "8.1" ]
+then
   echo "can not enable mongodb on 8.1"
 else
   docker-php-ext-enable mongodb
