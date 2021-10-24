@@ -14,16 +14,7 @@ fi
 yes | pecl install apcu igbinary
 echo "" | pecl install memcached
 
-if [ $PHP_VERSION = "8.0" ]
-then
-    # Use imagick from source for now.
-    mkdir -p /usr/src/php/ext/imagick; \
-        curl -fsSL https://github.com/Imagick/imagick/archive/06116aa24b76edaf6b1693198f79e6c295eda8a9.tar.gz | tar xvz -C "/usr/src/php/ext/imagick" --strip 1; \
-        docker-php-ext-install imagick
-    mkdir -p /usr/src/php/ext/redis && curl -fsSL https://pecl.php.net/get/redis | tar xvz -C "/usr/src/php/ext/redis" --strip 1 && docker-php-ext-install redis
-else
-    yes | pecl install imagick redis-3.1.1
-fi
+yes | pecl install imagick redis-3.1.1
 
 docker-php-ext-configure intl
 docker-php-ext-install intl
