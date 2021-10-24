@@ -17,13 +17,7 @@ else
 fi
 
 
-if [ $PHP_VERSION = "8.1" ]
-then
-    echo "skipping apcu,igbinary"
-else
-    yes | pecl install apcu igbinary
-fi
-
+yes | pecl install apcu igbinary
 echo "" | pecl install memcached
 
 if [ $PHP_VERSION = "8.0" ] || [ $PHP_VERSION = "8.1" ]
