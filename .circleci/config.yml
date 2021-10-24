@@ -36,6 +36,10 @@ jobs:
     environment:
       PHP_VERSION: 80
     <<: *shared
+  "php81":
+    environment:
+      PHP_VERSION: 81
+    <<: *shared
 
 workflows:
   version: 2
@@ -47,3 +51,4 @@ workflows:
       - "php73"
       - "php74"
       - "php80"
+      - "php81"
