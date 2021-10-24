@@ -17,7 +17,7 @@ else
 fi
 
 
-if [ $PHP_VERSION = "8.0" ] || [ $PHP_VERSION = "8.1" ]
+if [ $PHP_VERSION = "8.1" ]
 then
     yes | pecl install igbinary
 else
