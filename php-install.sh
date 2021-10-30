@@ -8,12 +8,7 @@ then
     # Use older mongodb.
     yes | pecl install mongodb-1.9.1
 else
-    if [ $PHP_VERSION = "8.1" ]
-    then
-        echo "skipping mongodb"
-    else
-        yes | pecl install mongodb
-    fi
+    yes | pecl install mongodb
 fi
 
 
@@ -42,13 +37,7 @@ else
     docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr
 fi
 docker-php-ext-install imap gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl intl
-docker-php-ext-enable memcached apcu imagick redis exif gd
-if [ $PHP_VERSION = "8.1" ]
-then
-  echo "can not enable mongodb on 8.1"
-else
-  docker-php-ext-enable mongodb
-fi
+docker-php-ext-enable memcached mongodb apcu imagick redis exif gd
 
 curl -sS https://getcomposer.org/installer | php \
   && mv composer.phar /usr/local/bin/composer
