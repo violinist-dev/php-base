@@ -11,15 +11,18 @@ else
     yes | pecl install mongodb
 fi
 
+
 yes | pecl install apcu igbinary
 echo "" | pecl install memcached
 
+
 yes | pecl install imagick redis-3.1.1
+
 
 docker-php-ext-configure intl
 docker-php-ext-install intl
 docker-php-ext-enable intl
-if [ $PHP_VERSION = "7.4" ] || [ $PHP_VERSION = "8.0" ]
+if [ $PHP_VERSION = "7.4" ] || [ $PHP_VERSION = "8.0" ] || [ $PHP_VERSION = "8.1" ]
 then
     apk add --no-cache oniguruma-dev
     docker-php-ext-configure gd --with-jpeg=/usr
@@ -27,7 +30,7 @@ else
     docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr
 fi
 docker-php-ext-install imap gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl intl
-docker-php-ext-enable memcached apcu mongodb imagick redis exif gd
+docker-php-ext-enable memcached mongodb apcu imagick redis exif gd
 
 curl -sS https://getcomposer.org/installer | php \
   && mv composer.phar /usr/local/bin/composer
