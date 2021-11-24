@@ -36,8 +36,24 @@ then
 else
     docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr
 fi
+
+if [ $PHP_VERSION = "8.0" ] || [ $PHP_VERSION = "8.1" ]
+then
+    if [ $PHP_VERSION = "8.1" ]
+        # Not supported yet, fails to compile
+        echo "Skipping xmlrpc on PHP 8.1"
+    then
+    else
+        # XMLRPC has moved to pecl from 8.0
+        pecl install pecl install xmlrpc-1.0.0RC2
+    fi
+else
+    docker-php-ext-install xmlrpc
+fi
+
+
 docker-php-ext-install xml calendar imap gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl intl
-docker-php-ext-enable xml calendar memcached mongodb apcu imagick redis exif gd
+docker-php-ext-enable xml xmlrpc calendar memcached mongodb apcu imagick redis exif gd
 
 curl -sS https://getcomposer.org/installer | php \
   && mv composer.phar /usr/local/bin/composer
