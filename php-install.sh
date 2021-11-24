@@ -53,7 +53,12 @@ fi
 
 
 docker-php-ext-install xml calendar imap gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl intl
-docker-php-ext-enable xml xmlrpc calendar memcached mongodb apcu imagick redis exif gd
+if [ $PHP_VERSION = "8.1" ]
+then
+    docker-php-ext-enable xml calendar memcached mongodb apcu imagick redis exif gd
+else
+    docker-php-ext-enable xml xmlrpc calendar memcached mongodb apcu imagick redis exif gd
+fi
 
 curl -sS https://getcomposer.org/installer | php \
   && mv composer.phar /usr/local/bin/composer
