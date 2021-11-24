@@ -40,9 +40,9 @@ fi
 if [ $PHP_VERSION = "8.0" ] || [ $PHP_VERSION = "8.1" ]
 then
     if [ $PHP_VERSION = "8.1" ]
+    then
         # Not supported yet, fails to compile
         echo "Skipping xmlrpc on PHP 8.1"
-    then
     else
         # XMLRPC has moved to pecl from 8.0
         pecl install pecl install xmlrpc-1.0.0RC2
