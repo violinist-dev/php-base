@@ -48,22 +48,26 @@ then
     if [ $PHP_VERSION = "8.1" ]
     then
         # Not supported yet, fails to compile
-        echo "Skipping xmlrpc on PHP 8.1"
+        echo "Skipping xmlrpc and sockets on PHP 8.1"
     else
         # XMLRPC has moved to pecl from 8.0
         pecl install pecl install xmlrpc-1.0.0RC2
+        # Sockets is supported on 8.0
+        docker-php-ext-install sockets
     fi
 else
-    docker-php-ext-install xmlrpc
+    docker-php-ext-install xmlrpc sockets
 fi
 
 
 docker-php-ext-install xml calendar imap gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl intl
 if [ $PHP_VERSION = "8.1" ]
 then
+    # XMLRPC does not work on 8.1
+    # Sockets does not work on 8.1
     docker-php-ext-enable xml calendar memcached mongodb apcu imagick redis exif gd
 else
-    docker-php-ext-enable xml xmlrpc calendar memcached mongodb apcu imagick redis exif gd
+    docker-php-ext-enable xml sockets xmlrpc calendar memcached mongodb apcu imagick redis exif gd
 fi
 
 curl -sS https://getcomposer.org/installer | php \
