@@ -58,7 +58,7 @@ else
 fi
 
 
-docker-php-ext-install xml calendar imap gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl intl
+docker-php-ext-install sockets xml calendar imap gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl intl
 if [ $PHP_VERSION = "8.1" ]
 then
     docker-php-ext-enable xml calendar memcached mongodb apcu imagick redis exif gd
