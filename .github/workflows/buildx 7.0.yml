@@ -52,3 +52,11 @@ jobs:
         if: always() && github.event_name != 'pull_request'
         run: |
           rm -f ${HOME}/.docker/config.json
+      - name: Workflow Webhook Action
+        uses: zzzze/webhook-trigger@master
+        with:
+          webhook_url: ${{ secrets.WEBHOOK_URL }}
+          webhook_secret: ${{ secrets.WEBHOOK_SECRET }}
+          user: ${{ secrets.WEBHOOK_AUTH }}
+          data: "{\"event_type\":\"i_did_something\"}"
+
