@@ -1,7 +1,7 @@
 set -eu
 
 apk add --no-cache libxslt-dev imap-dev sudo git libpng libjpeg libpq libxml2 mysql-client openssh-client rsync patch bash imagemagick libzip-dev \
-    imagemagick-libs imagemagick-dev autoconf g++ make icu-dev libpng-dev libjpeg-turbo-dev postgresql-dev libxml2-dev bzip2-dev icu icu-dev libmemcached-dev $PHPIZE_DEPS
+    imagemagick-libs imagemagick-dev librdkafka-dev autoconf g++ make icu-dev libpng-dev libjpeg-turbo-dev postgresql-dev libxml2-dev bzip2-dev icu icu-dev libmemcached-dev $PHPIZE_DEPS
 
 pecl channel-update pecl.php.net
 
@@ -18,7 +18,7 @@ else
 fi
 
 
-yes | pecl install apcu igbinary imagick
+yes | pecl install apcu igbinary imagick rdkafka
 echo "" | pecl install memcached
 
 if [ $PHP_VERSION = "8.0" ] || [ $PHP_VERSION = "8.1" ]
