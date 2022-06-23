@@ -61,9 +61,9 @@ if [ $PHP_VERSION = "8.1" ]
 then
     # XMLRPC does not work on 8.1
     # Sockets does not work on 8.1
-    docker-php-ext-enable xml calendar memcached mongodb apcu imagick redis exif gd
+    docker-php-ext-enable rdkafka xml calendar memcached mongodb apcu imagick redis exif gd
 else
-    docker-php-ext-enable xml sockets xmlrpc calendar memcached mongodb apcu imagick redis exif gd
+    docker-php-ext-enable rdkafka xml sockets xmlrpc calendar memcached mongodb apcu imagick redis exif gd
 fi
 
 curl -sS https://getcomposer.org/installer | php \
