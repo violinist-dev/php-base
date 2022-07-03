@@ -39,9 +39,9 @@ else
     docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr
 fi
 
-if [ $PHP_VERSION = "8.0" ] || [ $PHP_VERSION = "8.1" ]
+if [ $PHP_VERSION = "8.0" ] || [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ]
 then
-    if [ $PHP_VERSION = "8.1" ]
+    if [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ]
     then
         # Not supported yet, fails to compile
         echo "Skipping xmlrpc and sockets on PHP 8.1"
@@ -57,7 +57,7 @@ fi
 
 
 docker-php-ext-install xsl mysqli xml calendar imap gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl intl
-if [ $PHP_VERSION = "8.1" ]
+if [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ]
 then
     # XMLRPC does not work on 8.1
     # Sockets does not work on 8.1
