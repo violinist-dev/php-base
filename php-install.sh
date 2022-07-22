@@ -1,7 +1,7 @@
 set -eu
 
-apk add --no-cache imap-dev sudo git libpng libjpeg libpq libxml2 mysql-client openssh-client rsync patch bash imagemagick libzip-dev \
-    imagemagick-libs imagemagick-dev autoconf g++ make icu-dev libpng-dev libjpeg-turbo-dev postgresql-dev libxml2-dev bzip2-dev icu icu-dev libmemcached-dev $PHPIZE_DEPS
+apk add --no-cache libxslt-dev imap-dev sudo git libpng libjpeg libpq libxml2 mysql-client openssh-client rsync patch bash imagemagick libzip-dev \
+    imagemagick-libs imagemagick-dev librdkafka-dev autoconf g++ make icu-dev libpng-dev libjpeg-turbo-dev postgresql-dev libxml2-dev bzip2-dev icu icu-dev libmemcached-dev $PHPIZE_DEPS
 
 pecl channel-update pecl.php.net
 
@@ -18,15 +18,11 @@ else
 fi
 
 
-yes | pecl install apcu igbinary
+yes | pecl install apcu igbinary imagick rdkafka
 echo "" | pecl install memcached
 
-if [ $PHP_VERSION = "8.0" ] || [ $PHP_VERSION = "8.1" ]
+if [ $PHP_VERSION = "8.0" ] || [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ]
 then
-    # Use imagick from source for now.
-    mkdir -p /usr/src/php/ext/imagick; \
-        curl -fsSL https://github.com/Imagick/imagick/archive/06116aa24b76edaf6b1693198f79e6c295eda8a9.tar.gz | tar xvz -C "/usr/src/php/ext/imagick" --strip 1; \
-        docker-php-ext-install imagick
     mkdir -p /usr/src/php/ext/redis && curl -fsSL https://pecl.php.net/get/redis | tar xvz -C "/usr/src/php/ext/redis" --strip 1 && docker-php-ext-install redis
 else
     yes | pecl install imagick redis-3.1.1
@@ -35,7 +31,7 @@ fi
 docker-php-ext-configure intl
 docker-php-ext-install intl
 docker-php-ext-enable intl
-if [ $PHP_VERSION = "7.4" ] || [ $PHP_VERSION = "8.0" ] || [ $PHP_VERSION = "8.1" ]
+if [ $PHP_VERSION = "7.4" ] || [ $PHP_VERSION = "8.0" ] || [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ]
 then
     apk add --no-cache oniguruma-dev
     docker-php-ext-configure gd --with-jpeg=/usr
@@ -43,9 +39,9 @@ else
     docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr
 fi
 
-if [ $PHP_VERSION = "8.0" ] || [ $PHP_VERSION = "8.1" ]
+if [ $PHP_VERSION = "8.0" ] || [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ]
 then
-    if [ $PHP_VERSION = "8.1" ]
+    if [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ]
     then
         # Not supported yet, fails to compile
         echo "Skipping xmlrpc and sockets on PHP 8.1"
@@ -60,14 +56,14 @@ else
 fi
 
 
-docker-php-ext-install mysqli xml calendar imap gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl intl
-if [ $PHP_VERSION = "8.1" ]
+docker-php-ext-install xsl mysqli xml calendar imap gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl intl
+if [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ]
 then
     # XMLRPC does not work on 8.1
     # Sockets does not work on 8.1
-    docker-php-ext-enable xml calendar memcached mongodb apcu imagick redis exif gd
+    docker-php-ext-enable rdkafka xml calendar memcached mongodb apcu imagick redis exif gd
 else
-    docker-php-ext-enable xml sockets xmlrpc calendar memcached mongodb apcu imagick redis exif gd
+    docker-php-ext-enable rdkafka xml sockets xmlrpc calendar memcached mongodb apcu imagick redis exif gd
 fi
 
 curl -sS https://getcomposer.org/installer | php \
