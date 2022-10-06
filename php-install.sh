@@ -18,7 +18,7 @@ else
 fi
 
 
-yes | pecl install apcu igbinary imagick rdkafka
+yes | pecl install apcu igbinary oauth imagick rdkafka
 echo "" | pecl install memcached
 
 if [ $PHP_VERSION = "8.0" ] || [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ]
