@@ -41,7 +41,9 @@ jobs:
       -
         name: Docker Buildx (build)
         run: |
-          docker buildx build --output "type=image,push=true" ${{ steps.prepare.outputs.buildx_args }} -t violinist/php-base:8.0-multi -f Dockerfile-80 .
+          docker buildx build --build-arg HARDCODED_HOSTS --output "type=image,push=true" ${{ steps.prepare.outputs.buildx_args }} -t violinist/php-base:8.0-multi -f Dockerfile-80 .
+        env:
+          HARDCODED_HOSTS: ${{ secrets.HARDCODED_HOSTS }}
       -
         name: Docker Check Manifest
         if: always() && github.event_name != 'pull_request'
