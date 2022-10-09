@@ -9,7 +9,7 @@
     - run:
         name: Install Docker client
         command: apk add --no-cache docker
-    - run: docker build -t php-base . -f Dockerfile-$PHP_VERSION
+    - run: docker build --build-arg HARDCODED_HOSTS -t php-base . -f Dockerfile-$PHP_VERSION
 
 jobs:
   "php70":
@@ -36,7 +36,7 @@ jobs:
   "php80":
     environment:
       PHP_VERSION: 80
-      HARDCODED_HOSTS: 127.0.0.1 test.local
+      HARDCODED_HOSTS: "127.0.0.1 test.local"
     <<: *shared
   "php81":
     environment:
