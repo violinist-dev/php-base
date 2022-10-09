@@ -1,5 +1,4 @@
-
-: &shared
+shared: &shared
   docker:
     - image: alpine
   steps:
