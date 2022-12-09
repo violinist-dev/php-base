@@ -1,6 +1,6 @@
 set -eu
 
-apk add --no-cache pcre-dev libxslt-dev imap-dev sudo git libpng libjpeg libpq libxml2 mysql-client openssh-client rsync patch bash imagemagick libzip-dev \
+apk add --no-cache ldb-dev libldap openldap-dev pcre-dev libxslt-dev imap-dev sudo git libpng libjpeg libpq libxml2 mysql-client openssh-client rsync patch bash imagemagick libzip-dev \
     imagemagick-libs imagemagick-dev librdkafka-dev autoconf g++ make icu-dev libpng-dev libjpeg-turbo-dev postgresql-dev libxml2-dev bzip2-dev icu icu-dev libmemcached-dev $PHPIZE_DEPS
 
 pecl channel-update pecl.php.net
@@ -56,14 +56,14 @@ else
 fi
 
 
-docker-php-ext-install xsl mysqli xml calendar imap gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl intl
+docker-php-ext-install ldap xsl mysqli xml calendar imap gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl intl
 if [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ]
 then
     # XMLRPC does not work on 8.1
     # Sockets does not work on 8.1
-    docker-php-ext-enable rdkafka xml calendar memcached mongodb apcu imagick redis exif gd
+    docker-php-ext-enable ldap rdkafka xml calendar memcached mongodb apcu imagick redis exif gd
 else
-    docker-php-ext-enable rdkafka xml sockets xmlrpc calendar memcached mongodb apcu imagick redis exif gd
+    docker-php-ext-enable ldap rdkafka xml sockets xmlrpc calendar memcached mongodb apcu imagick redis exif gd
 fi
 
 curl -sS https://getcomposer.org/installer | php \
