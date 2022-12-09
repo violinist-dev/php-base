@@ -1,0 +1,39 @@
+name: Test
+on:
+  schedule:
+    - cron: '0 0 * * *' # everyday at midnight 
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: Run tests
+    runs-on: 'ubuntu-20.04'
+    strategy:
+      fail-fast: true
+      matrix:
+        php-version:
+          - "72"
+          - "73"
+          - "74"
+          - "80"
+          - "81"
+          - "82"
+        composer-version:
+          - "1"
+          - "2"
+    steps:
+      - name: Dump matrix context
+        env:
+          MATRIX_CONTEXT: ${{ toJSON(matrix) }}
+        run: echo "$MATRIX_CONTEXT"
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Build test image
+        run: docker build -t php-base . -f Dockerfile-$PHP_VERSION
