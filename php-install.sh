@@ -56,14 +56,14 @@ else
 fi
 
 
-docker-php-ext-install xsl mysqli xml calendar imap gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl intl
+docker-php-ext-install ldap xsl mysqli xml calendar imap gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl intl
 if [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ]
 then
     # XMLRPC does not work on 8.1
     # Sockets does not work on 8.1
-    docker-php-ext-enable rdkafka xml calendar memcached mongodb apcu imagick redis exif gd
+    docker-php-ext-enable ldap rdkafka xml calendar memcached mongodb apcu imagick redis exif gd
 else
-    docker-php-ext-enable rdkafka xml sockets xmlrpc calendar memcached mongodb apcu imagick redis exif gd
+    docker-php-ext-enable ldap rdkafka xml sockets xmlrpc calendar memcached mongodb apcu imagick redis exif gd
 fi
 
 curl -sS https://getcomposer.org/installer | php \
