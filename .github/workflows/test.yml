@@ -24,8 +24,6 @@ jobs:
           - "81"
           - "82"
 
-
-
     steps:
       - name: Dump matrix context
         env:
@@ -38,5 +36,7 @@ jobs:
       - name: Build test image
         run: docker build -t php-base . -f Dockerfile-$PHP_VERSION
         env:
-          COMPOSER_VERSION: ${{ matrix.composer-version }}
           PHP_VERSION: ${{ matrix.php-version }}
+          
+      - name: Output modules 
+        run: docker run php-base php -m
