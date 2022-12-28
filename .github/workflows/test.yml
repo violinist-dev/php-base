@@ -40,3 +40,15 @@ jobs:
           
       - name: Output modules 
         run: docker run php-base php -m
+
+      - name: Trigger Workflow
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: 'update-check-runner',
+              workflow_id: 'test.yml',
+              ref: 'main',
+            })
+
