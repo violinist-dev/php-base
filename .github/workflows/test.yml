@@ -1,0 +1,42 @@
+name: Test
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+
+jobs:
+  test:
+    name: Run tests
+    runs-on: 'ubuntu-20.04'
+    strategy:
+      fail-fast: true
+      matrix:
+        php-version:
+          - "72"
+          - "73"
+          - "74"
+          - "80"
+          - "81"
+          - "82"
+
+    steps:
+      - name: Dump matrix context
+        env:
+          MATRIX_CONTEXT: ${{ toJSON(matrix) }}
+        run: echo "$MATRIX_CONTEXT"
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Build test image
+        run: docker build -t php-base . -f Dockerfile-$PHP_VERSION
+        env:
+          PHP_VERSION: ${{ matrix.php-version }}
+          
+      - name: Output modules 
+        run: docker run php-base php -m
