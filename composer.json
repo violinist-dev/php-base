@@ -1,7 +1,9 @@
 {
   "name": "test/test",
+  "description": "A file containing the extensions we want to support",
   "require": {
     "ext-mongodb": "*",
-    "ext-sockets": "*"
+    "ext-ldap": "*",
+    "ext-mailparse": "*"
   }
 }
