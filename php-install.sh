@@ -18,8 +18,15 @@ else
 fi
 
 
-yes | pecl install mailparse apcu igbinary oauth imagick rdkafka
+yes | pecl install apcu igbinary oauth imagick rdkafka
 echo "" | pecl install memcached
+
+if [ $PHP_VERSION = "7.2" ]
+then
+    yes | pecl install mailparse-3.1.3
+else
+    yes | pecl mailparse
+fi
 
 if [ $PHP_VERSION = "8.0" ] || [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ]
 then
