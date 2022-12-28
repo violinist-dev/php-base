@@ -42,4 +42,4 @@ jobs:
         run: docker run php-base php -m
 
       - name: Check requirements 
-        run: docker run -v $(pwd):/test php-base composer -d "/test" install
+        run: docker run -w "/test" -v $(pwd):/test php-base composer install
