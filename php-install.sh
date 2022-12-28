@@ -18,7 +18,7 @@ else
 fi
 
 
-yes | pecl install apcu igbinary oauth imagick rdkafka
+yes | pecl install mailparse apcu igbinary oauth imagick rdkafka
 echo "" | pecl install memcached
 
 if [ $PHP_VERSION = "8.0" ] || [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ]
@@ -61,9 +61,9 @@ if [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ]
 then
     # XMLRPC does not work on 8.1
     # Sockets does not work on 8.1
-    docker-php-ext-enable ldap rdkafka xml calendar memcached mongodb apcu imagick redis exif gd
+    docker-php-ext-enable mailparse ldap rdkafka xml calendar memcached mongodb apcu imagick redis exif gd
 else
-    docker-php-ext-enable ldap rdkafka xml sockets xmlrpc calendar memcached mongodb apcu imagick redis exif gd
+    docker-php-ext-enable mailparse ldap rdkafka xml sockets xmlrpc calendar memcached mongodb apcu imagick redis exif gd
 fi
 
 curl -sS https://getcomposer.org/installer | php \
