@@ -1,6 +1,7 @@
 {
   "name": "test/test",
   "require": {
-    "ext-mongodb": "*"
+    "ext-mongodb": "*",
+    "ext-sockets": "*"
   }
 }
