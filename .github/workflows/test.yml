@@ -40,5 +40,3 @@ jobs:
           
       - name: Output modules 
         run: docker run php-base php -m
-
-
