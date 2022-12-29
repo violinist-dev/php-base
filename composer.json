@@ -4,6 +4,9 @@
   "require": {
     "ext-mongodb": "*",
     "ext-ldap": "*",
-    "ext-mailparse": "*"
+    "ext-mailparse": "*",
+    "ext-gd": "*",
+    "ext-xsl": "*",
+    "ext-calendar": "*"
   }
 }
