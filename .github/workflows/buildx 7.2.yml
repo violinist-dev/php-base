@@ -52,3 +52,15 @@ jobs:
         if: always() && github.event_name != 'pull_request'
         run: |
           rm -f ${HOME}/.docker/config.json
+
+      - name: Trigger Workflow
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.PAT }}
+          script: |
+            github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: 'update-check-runner',
+              workflow_id: 'buildx 7.2.yml',
+              ref: 'main',
+            })
