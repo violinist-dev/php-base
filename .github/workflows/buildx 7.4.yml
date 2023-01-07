@@ -64,3 +64,15 @@ jobs:
               workflow_id: 'buildx 7.4.yml',
               ref: 'main',
             })
+
+      - name: Trigger docs Workflow
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.PAT }}
+          script: |
+            github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: 'docs',
+              workflow_id: 'extensions-up-to-date.yml',
+              ref: 'master',
+            })
