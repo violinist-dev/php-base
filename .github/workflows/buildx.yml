@@ -1,4 +1,4 @@
-name: buildx 7.2
+name: buildx
 
 on:
   schedule:
@@ -6,9 +6,26 @@ on:
   push:
     branches: main
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
   buildx:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: true
+      matrix:
+        php-version:
+          - "7.2"
+          - "7.3"
+          - "7.4"
+          - "8.0"
+          - "8.1"
+          - "8.2"
     steps:
       -
         name: Checkout
@@ -17,7 +34,7 @@ jobs:
         name: Prepare
         id: prepare
         run: |
-          DOCKER_IMAGE=violinist/php-base
+          DOCKER_IMAGE=${{ env.IMAGE_NAME }}
           DOCKER_PLATFORMS=linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64
 
           echo ::set-output name=docker_image::${DOCKER_IMAGE}
@@ -30,14 +47,12 @@ jobs:
       -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v1
-      -
-            name: Docker Login
-            if: success() && github.event_name != 'pull_request'
-            env:
-              DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-              DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-            run: |
-              echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin
+      - name: Log in to the Container registry
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       -
         name: Docker Buildx (build)
         run: |
