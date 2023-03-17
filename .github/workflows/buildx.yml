@@ -67,8 +67,8 @@ jobs:
           context: .
           file: ${{ steps.file.outputs.FILE }}
           #push: ${{ github.event_name == 'push' }}
-          push: false
-          tags: ${{ matrix.php-version }}-multi
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.php-version }}-multi
           labels: ${{ steps.meta.outputs.labels }}
       -
         name: Docker Check Manifest
