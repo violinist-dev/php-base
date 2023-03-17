@@ -57,7 +57,7 @@ jobs:
       - name: Set docker file variable 
         id: file
         run: |
-          FILE=Dockerfile-$(echo "${{ matrix.php-version }}" | sed "s/\.//"
+          FILE=Dockerfile-$(echo "${{ matrix.php-version }}" | sed "s/\.//")
           echo $FILE
           echo "FILE=$FILE" >> $GITHUB_OUTPUT
 
