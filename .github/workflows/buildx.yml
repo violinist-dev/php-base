@@ -73,6 +73,6 @@ jobs:
             github.rest.actions.createWorkflowDispatch({
               owner: context.repo.owner,
               repo: 'update-check-runner',
-              workflow_id: 'buildx 7.2.yml',
+              workflow_id: 'buildx.yml',
               ref: 'main',
             })
