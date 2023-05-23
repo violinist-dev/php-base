@@ -31,7 +31,7 @@ fi
 if [ $PHP_VERSION = "7.2" ]
 then
     yes | pecl install sqlsrv-5.8.1
-elif [ $PHP_VERSION = "7.3"]
+elif [ $PHP_VERSION = "7.3" ]
 then
     yes | pecl install sqlsrv-5.10.1
 else
