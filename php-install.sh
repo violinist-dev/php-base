@@ -51,11 +51,17 @@ then
     if [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ]
     then
         # Not supported yet, fails to compile
-        echo "Skipping xmlrpc and sockets on PHP 8.1"
+        echo "Skipping xmlrpc and sockets on PHP 8.1 / 8.2"
     else
         # XMLRPC has moved to pecl from 8.0
         pecl install pecl install xmlrpc-1.0.0RC2
         # Sockets is supported on 8.0
+        docker-php-ext-install sockets
+    fi
+    # In fact, PHP 8.1 seems to support it now?
+    if [ $PHP_VERSION = "8.1" ]
+    then
+        echo "installing sockets on PHP 8.1 after all"
         docker-php-ext-install sockets
     fi
 else
