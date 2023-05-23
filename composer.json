@@ -3,6 +3,7 @@
   "description": "A file containing the extensions we want to support",
   "require": {
     "ext-mongodb": "*",
+    "ext-sqlsrv": "*",
     "ext-ldap": "*",
     "ext-mailparse": "*",
     "ext-gd": "*",

@@ -1,6 +1,6 @@
 set -eu
 
-apk add --no-cache mpdecimal-dev ldb-dev libldap openldap-dev pcre-dev libxslt-dev imap-dev sudo git libpng libjpeg libpq libxml2 mysql-client openssh-client rsync patch bash imagemagick libzip-dev \
+apk add --no-cache mpdecimal-dev unixodbc-dev yaml-dev ldb-dev libldap openldap-dev pcre-dev libxslt-dev imap-dev sudo git libpng libjpeg libpq libxml2 mysql-client openssh-client rsync patch bash imagemagick libzip-dev \
     imagemagick-libs imagemagick-dev librdkafka-dev autoconf g++ make icu-dev libpng-dev libjpeg-turbo-dev postgresql-dev libxml2-dev bzip2-dev icu icu-dev libmemcached-dev $PHPIZE_DEPS
 
 pecl channel-update pecl.php.net
@@ -18,7 +18,7 @@ else
 fi
 
 
-yes | pecl install decimal apcu igbinary oauth imagick rdkafka
+yes | pecl install apcu igbinary oauth imagick rdkafka yaml decimal
 echo "" | pecl install memcached
 
 if [ $PHP_VERSION = "7.2" ]
@@ -26,6 +26,16 @@ then
     yes | pecl install mailparse-3.1.3
 else
     yes | pecl install mailparse
+fi
+
+if [ $PHP_VERSION = "7.2" ]
+then
+    yes | pecl install sqlsrv-5.8.1
+elif [ $PHP_VERSION = "7.3" ] || [ $PHP_VERSION = "7.4" ]
+then
+    yes | pecl install sqlsrv-5.10.1
+else
+    yes | pecl install sqlsrv
 fi
 
 if [ $PHP_VERSION = "8.0" ] || [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ]
@@ -37,7 +47,7 @@ fi
 
 docker-php-ext-configure intl
 docker-php-ext-install intl
-docker-php-ext-enable intl decimal
+docker-php-ext-enable intl yaml sqlsrv decimal
 if [ $PHP_VERSION = "7.4" ] || [ $PHP_VERSION = "8.0" ] || [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ]
 then
     apk add --no-cache oniguruma-dev
