@@ -18,7 +18,7 @@ else
 fi
 
 
-yes | pecl install apcu igbinary oauth imagick rdkafka yaml sqlsrv
+yes | pecl install apcu igbinary oauth imagick rdkafka yaml
 echo "" | pecl install memcached
 
 if [ $PHP_VERSION = "7.2" ]
@@ -26,6 +26,13 @@ then
     yes | pecl install mailparse-3.1.3
 else
     yes | pecl install mailparse
+fi
+
+if [ $PHP_VERSION = "7.2" ]
+then
+    yes | pecl install sqlsrv-5.8.1
+else
+    yes | pecl install sqlsrv
 fi
 
 if [ $PHP_VERSION = "8.0" ] || [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ]
