@@ -9,6 +9,7 @@
     "ext-mailparse": "*",
     "ext-gd": "*",
     "ext-xsl": "*",
+    "ext-pdo_sqlsrv": "*",
     "ext-calendar": "*"
   }
 }
