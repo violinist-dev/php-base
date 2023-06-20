@@ -31,7 +31,7 @@ else
 fi
 
 
-yes | pecl install apcu igbinary oauth imagick rdkafka yaml decimal
+yes | pecl install apcu igbinary oauth imagick rdkafka yaml decimal uuid
 echo "" | pecl install memcached
 
 if [ $PHP_VERSION = "7.2" ]
@@ -60,7 +60,7 @@ fi
 
 docker-php-ext-configure intl
 docker-php-ext-install intl
-docker-php-ext-enable intl yaml sqlsrv pdo_sqlsrv decimal
+docker-php-ext-enable intl yaml sqlsrv pdo_sqlsrv decimal uuid
 if [ $PHP_VERSION = "7.4" ] || [ $PHP_VERSION = "8.0" ] || [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ]
 then
     apk add --no-cache oniguruma-dev
