@@ -31,7 +31,7 @@ else
 fi
 
 
-yes | pecl install apcu igbinary oauth imagick rdkafka yaml decimal
+yes | pecl install apcu igbinary oauth imagick rdkafka yaml decimal uuid
 echo "" | pecl install memcached
 
 if [ $PHP_VERSION = "7.2" ]
