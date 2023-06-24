@@ -11,6 +11,7 @@
     "ext-xsl": "*",
     "ext-pdo_sqlsrv": "*",
     "ext-calendar": "*",
-    "ext-uuid": "*"
+    "ext-uuid": "*",
+    "ext-redis": "*"
   }
 }
