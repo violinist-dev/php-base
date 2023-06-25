@@ -32,14 +32,6 @@ fi
 
 
 yes | pecl install apcu igbinary oauth rdkafka yaml decimal uuid
-if [ $PHP_VERSION = "8.3" ]
-then
-  echo "Skipping imagick for PHP 8.3"
-else
-  yes | pecl install imagick
-  docker-php-ext-enable imagick
-fi
-echo "" | pecl install memcached
 
 if [ $PHP_VERSION = "7.2" ]
 then
@@ -47,6 +39,15 @@ then
 else
     yes | pecl install mailparse
 fi
+
+if [ $PHP_VERSION = "8.3" ]
+then
+  echo "Skipping imagick for PHP 8.3"
+else
+  yes | pecl install imagick
+  docker-php-ext-enable imagick mailparse
+fi
+echo "" | pecl install memcached
 
 if [ $PHP_VERSION = "7.2" ]
 then
