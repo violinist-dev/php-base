@@ -37,6 +37,7 @@ then
   echo "Skipping imagick for PHP 8.3"
 else
   yes | pecl install imagick
+  docker-php-ext-enable imagick
 fi
 echo "" | pecl install memcached
 
@@ -103,9 +104,9 @@ if [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ] || [ $PHP_VERSION = "8.3
 then
     # XMLRPC does not work on 8.1
     # Sockets does not work on 8.1
-    docker-php-ext-enable mailparse ldap rdkafka xml calendar memcached mongodb apcu imagick redis exif gd
+    docker-php-ext-enable mailparse ldap rdkafka xml calendar memcached mongodb apcu redis exif gd
 else
-    docker-php-ext-enable mailparse ldap rdkafka xml sockets xmlrpc calendar memcached mongodb apcu imagick redis exif gd
+    docker-php-ext-enable mailparse ldap rdkafka xml sockets xmlrpc calendar memcached mongodb apcu redis exif gd
 fi
 
 curl -sS https://getcomposer.org/installer | php \
