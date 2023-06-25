@@ -13,6 +13,7 @@ else
     ./configure --disable-cxx
     make
     make install
+    cd ..
     rm -rf mpdecimal-2.5.1*
 fi
 
