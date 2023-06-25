@@ -1,4 +1,5 @@
 set -eu
+
 apk add --no-cache unixodbc-dev yaml-dev ldb-dev libldap openldap-dev pcre-dev libxslt-dev imap-dev sudo git libpng libjpeg libpq libxml2 mysql-client openssh-client rsync patch bash imagemagick libzip-dev \
     imagemagick-libs imagemagick-dev librdkafka-dev autoconf g++ make icu-dev libpng-dev libjpeg-turbo-dev postgresql-dev libxml2-dev bzip2-dev icu icu-dev libmemcached-dev $PHPIZE_DEPS
 
@@ -76,7 +77,7 @@ fi
 
 if [ $PHP_VERSION = "8.0" ] || [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ] || [ $PHP_VERSION = "8.3" ]
 then
-    if [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ]
+    if [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ] || [ $PHP_VERSION = "8.3" ] 
     then
         # Not supported yet, fails to compile
         echo "Skipping xmlrpc and sockets on PHP 8.1 / 8.2"
