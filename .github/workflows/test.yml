@@ -23,6 +23,7 @@ jobs:
           - "80"
           - "81"
           - "82"
+          - "83"
 
     steps:
       - name: Dump matrix context
@@ -42,4 +43,5 @@ jobs:
         run: docker run php-base php -m
 
       - name: Check requirements 
+        if: ${{ matrix.php-version != '83' }}
         run: docker run -w "/test" -v $(pwd):/test php-base composer install

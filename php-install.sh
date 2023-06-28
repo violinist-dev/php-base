@@ -3,7 +3,7 @@ set -eu
 apk add --no-cache unixodbc-dev yaml-dev ldb-dev libldap openldap-dev pcre-dev libxslt-dev imap-dev sudo git libpng libjpeg libpq libxml2 mysql-client openssh-client rsync patch bash imagemagick libzip-dev \
     imagemagick-libs imagemagick-dev librdkafka-dev autoconf g++ make icu-dev libpng-dev libjpeg-turbo-dev postgresql-dev libxml2-dev bzip2-dev icu icu-dev libmemcached-dev $PHPIZE_DEPS
 
-if [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ]
+if [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ] || [ $PHP_VERSION = "8.3" ] 
 then
     apk add --no-cache mpdecimal-dev
 else
@@ -32,15 +32,28 @@ else
 fi
 
 
-yes | pecl install apcu igbinary oauth imagick rdkafka yaml decimal uuid
-echo "" | pecl install memcached
+yes | pecl install apcu igbinary oauth rdkafka yaml decimal uuid
 
 if [ $PHP_VERSION = "7.2" ]
 then
     yes | pecl install mailparse-3.1.3
+elif [ $PHP_VERSION = "8.3" ]
+then
+    echo "Skipping mailparse for 8.3"
 else
     yes | pecl install mailparse
 fi
+
+if [ $PHP_VERSION = "8.3" ]
+then
+  echo "Skipping imagick for PHP 8.3"
+else
+  yes | pecl install imagick
+  # Also enable the mail parse extension installed above (also
+  # not working on PHP 8.3).
+  docker-php-ext-enable imagick mailparse
+fi
+echo "" | pecl install memcached
 
 if [ $PHP_VERSION = "7.2" ]
 then
@@ -52,7 +65,7 @@ else
     yes | pecl install sqlsrv pdo_sqlsrv
 fi
 
-if [ $PHP_VERSION = "8.0" ] || [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ]
+if [ $PHP_VERSION = "8.0" ] || [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ] || [ $PHP_VERSION = "8.3" ]
 then
     mkdir -p /usr/src/php/ext/redis && curl -fsSL https://pecl.php.net/get/redis | tar xvz -C "/usr/src/php/ext/redis" --strip 1 && docker-php-ext-install redis
 else
@@ -62,7 +75,7 @@ fi
 docker-php-ext-configure intl
 docker-php-ext-install intl
 docker-php-ext-enable intl yaml sqlsrv pdo_sqlsrv decimal uuid
-if [ $PHP_VERSION = "7.4" ] || [ $PHP_VERSION = "8.0" ] || [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ]
+if [ $PHP_VERSION = "7.4" ] || [ $PHP_VERSION = "8.0" ] || [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ] || [ $PHP_VERSION = "8.3" ]
 then
     apk add --no-cache oniguruma-dev
     docker-php-ext-configure gd --with-jpeg=/usr
@@ -70,9 +83,9 @@ else
     docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr
 fi
 
-if [ $PHP_VERSION = "8.0" ] || [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ]
+if [ $PHP_VERSION = "8.0" ] || [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ] || [ $PHP_VERSION = "8.3" ]
 then
-    if [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ]
+    if [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ] || [ $PHP_VERSION = "8.3" ] 
     then
         # Not supported yet, fails to compile
         echo "Skipping xmlrpc and sockets on PHP 8.1 / 8.2"
@@ -94,13 +107,13 @@ fi
 
 
 docker-php-ext-install ldap xsl mysqli xml calendar imap gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl intl
-if [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ]
+if [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ] || [ $PHP_VERSION = "8.3" ] 
 then
     # XMLRPC does not work on 8.1
     # Sockets does not work on 8.1
-    docker-php-ext-enable mailparse ldap rdkafka xml calendar memcached mongodb apcu imagick redis exif gd
+    docker-php-ext-enable ldap rdkafka xml calendar memcached mongodb apcu redis exif gd
 else
-    docker-php-ext-enable mailparse ldap rdkafka xml sockets xmlrpc calendar memcached mongodb apcu imagick redis exif gd
+    docker-php-ext-enable ldap rdkafka xml sockets xmlrpc calendar memcached mongodb apcu redis exif gd
 fi
 
 curl -sS https://getcomposer.org/installer | php \
