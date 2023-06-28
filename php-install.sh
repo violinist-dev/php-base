@@ -49,7 +49,7 @@ then
   echo "Skipping imagick for PHP 8.3"
 else
   yes | pecl install imagick
-  # Also enable the mail parse extension installes above (also
+  # Also enable the mail parse extension installed above (also
   # not working on PHP 8.3).
   docker-php-ext-enable imagick mailparse
 fi
