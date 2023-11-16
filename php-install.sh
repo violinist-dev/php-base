@@ -27,8 +27,11 @@ elif [ $PHP_VERSION = "7.1" ]
 then
     # Use older mongodb.
     yes | pecl install mongodb-1.11.1
+elif [ $PHP_VERSION = "7.2" ] || [ $PHP_VERSION = "7.3" ]
+then
+    yes | pecl install mongodb-1.16.2
 else
-    yes | pecl install mongodb
+    echo "yes" | pecl install mongodb
 fi
 
 
