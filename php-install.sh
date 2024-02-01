@@ -65,6 +65,7 @@ elif [ $PHP_VERSION = "7.3" ] || [ $PHP_VERSION = "7.4" ]
 then
     yes | pecl install sqlsrv-5.10.1 pdo_sqlsrv-5.10.1
 elif [ $PHP_VERSION = "8.0" ]
+then
     yes | pecl install sqlsrv-5.11.1 pdo_sqlsrv-5.11.1
 else
     yes | pecl install sqlsrv pdo_sqlsrv
