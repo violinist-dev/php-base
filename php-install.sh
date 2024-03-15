@@ -160,3 +160,6 @@ wget https://github.com/symfony/cli/releases/download/v4.16.3/symfony_linux_${ma
 gzip -d /tmp/symfony.gz
 chmod 755 /tmp/symfony
 mv /tmp/symfony /usr/local/bin/symfony
+wget https://getcomposer.org/download/latest-2.2.x/composer.phar -O /tmp/composer22
+chmod 755 /tmp/composer22
+mv /tmp/composer22 /usr/local/bin/composer22
