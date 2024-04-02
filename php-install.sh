@@ -80,7 +80,7 @@ fi
 
 docker-php-ext-configure intl
 docker-php-ext-install intl
-docker-php-ext-enable intl yaml gmp sqlsrv pdo_sqlsrv decimal uuid
+docker-php-ext-enable intl yaml sqlsrv pdo_sqlsrv decimal uuid
 if [ $PHP_VERSION = "7.4" ] || [ $PHP_VERSION = "8.0" ] || [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ] || [ $PHP_VERSION = "8.3" ]
 then
     apk add --no-cache oniguruma-dev
@@ -112,7 +112,7 @@ else
 fi
 
 
-docker-php-ext-install ldap xsl mysqli xml calendar imap gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl intl
+docker-php-ext-install gmp ldap xsl mysqli xml calendar imap gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl intl
 if [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ] || [ $PHP_VERSION = "8.3" ] 
 then
     # XMLRPC does not work on 8.1
