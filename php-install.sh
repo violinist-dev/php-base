@@ -40,9 +40,6 @@ yes | pecl install apcu igbinary oauth rdkafka yaml decimal uuid
 if [ $PHP_VERSION = "7.2" ]
 then
     yes | pecl install mailparse-3.1.3
-elif [ $PHP_VERSION = "8.3" ]
-then
-    echo "Skipping mailparse for 8.3"
 else
     yes | pecl install mailparse
 fi
