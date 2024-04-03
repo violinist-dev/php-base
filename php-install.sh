@@ -1,6 +1,6 @@
 set -eu
 
-apk add --no-cache unixodbc-dev yaml-dev ldb-dev libldap openldap-dev pcre-dev libxslt-dev imap-dev sudo git libpng libjpeg libpq libxml2 mysql-client openssh-client rsync patch bash imagemagick libzip-dev \
+apk add --no-cache unixodbc-dev gmp-dev yaml-dev ldb-dev libldap openldap-dev pcre-dev libxslt-dev imap-dev sudo git libpng libjpeg libpq libxml2 mysql-client openssh-client rsync patch bash imagemagick libzip-dev \
     imagemagick-libs imagemagick-dev librdkafka-dev autoconf g++ make icu-dev libpng-dev libjpeg-turbo-dev postgresql-dev libxml2-dev bzip2-dev icu icu-dev libmemcached-dev $PHPIZE_DEPS
 
 if [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ] || [ $PHP_VERSION = "8.3" ] 
@@ -40,9 +40,6 @@ yes | pecl install apcu igbinary oauth rdkafka yaml decimal uuid
 if [ $PHP_VERSION = "7.2" ]
 then
     yes | pecl install mailparse-3.1.3
-elif [ $PHP_VERSION = "8.3" ]
-then
-    echo "Skipping mailparse for 8.3"
 else
     yes | pecl install mailparse
 fi
@@ -112,7 +109,7 @@ else
 fi
 
 
-docker-php-ext-install ldap xsl mysqli xml calendar imap gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl intl
+docker-php-ext-install gmp ldap xsl mysqli xml calendar imap gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl intl
 if [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ] || [ $PHP_VERSION = "8.3" ] 
 then
     # XMLRPC does not work on 8.1
