@@ -14,7 +14,6 @@ jobs:
     name: Run tests
     runs-on: 'ubuntu-20.04'
     strategy:
-      fail-fast: true
       matrix:
         php-version:
           - "72"
@@ -42,6 +41,5 @@ jobs:
       - name: Output modules 
         run: docker run php-base php -m
 
-      - name: Check requirements 
-        if: ${{ matrix.php-version != '83' }}
+      - name: Check requirements
         run: docker run -w "/test" -v $(pwd):/test php-base composer install
