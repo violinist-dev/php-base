@@ -12,6 +12,7 @@
     "ext-pdo_sqlsrv": "*",
     "ext-calendar": "*",
     "ext-uuid": "*",
-    "ext-redis": "*"
+    "ext-redis": "*",
+    "ext-gmp": "*"
   }
 }
