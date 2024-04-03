@@ -44,15 +44,8 @@ else
     yes | pecl install mailparse
 fi
 
-if [ $PHP_VERSION = "8.3" ]
-then
-  echo "Skipping imagick for PHP 8.3"
-else
-  yes | pecl install imagick
-  # Also enable the mail parse extension installed above (also
-  # not working on PHP 8.3).
-  docker-php-ext-enable imagick mailparse
-fi
+yes | pecl install imagick
+docker-php-ext-enable imagick mailparse
 echo "" | pecl install memcached
 
 if [ $PHP_VERSION = "7.2" ]

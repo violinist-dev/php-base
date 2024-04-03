@@ -13,6 +13,7 @@
     "ext-calendar": "*",
     "ext-uuid": "*",
     "ext-redis": "*",
-    "ext-gmp": "*"
+    "ext-gmp": "*",
+    "ext-imagick": "*"
   }
 }
