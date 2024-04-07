@@ -35,7 +35,7 @@ else
 fi
 
 
-yes | pecl install apcu igbinary oauth rdkafka yaml decimal uuid
+yes | pecl install apcu igbinary oauth rdkafka yaml decimal uuid msgpack
 
 if [ $PHP_VERSION = "7.2" ]
 then
@@ -45,7 +45,7 @@ else
 fi
 
 yes | pecl install imagick
-docker-php-ext-enable imagick mailparse
+docker-php-ext-enable imagick mailparse msgpack
 echo "" | pecl install memcached
 
 if [ $PHP_VERSION = "7.2" ]
