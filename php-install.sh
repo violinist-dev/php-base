@@ -35,7 +35,7 @@ else
 fi
 
 
-yes | pecl install apcu igbinary oauth rdkafka yaml decimal uuid msgpack imagick
+yes | pecl install apcu igbinary oauth rdkafka yaml decimal uuid msgpack
 
 if [ $PHP_VERSION = "7.2" ]
 then
@@ -63,12 +63,12 @@ if [ $PHP_VERSION = "8.0" ] || [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2
 then
     mkdir -p /usr/src/php/ext/redis && curl -fsSL https://pecl.php.net/get/redis | tar xvz -C "/usr/src/php/ext/redis" --strip 1 && docker-php-ext-install redis
 else
-    yes | pecl install imagick redis-3.1.1
+    yes | pecl install redis-3.1.1
 fi
 
 docker-php-ext-configure intl
 docker-php-ext-install intl
-docker-php-ext-enable intl yaml sqlsrv pdo_sqlsrv decimal uuid imagick mailparse msgpack 
+docker-php-ext-enable intl yaml sqlsrv pdo_sqlsrv decimal uuid mailparse msgpack 
 if [ $PHP_VERSION = "7.4" ] || [ $PHP_VERSION = "8.0" ] || [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ] || [ $PHP_VERSION = "8.3" ]
 then
     apk add --no-cache oniguruma-dev
@@ -99,6 +99,22 @@ else
     docker-php-ext-install xmlrpc sockets
 fi
 
+if [ $PHP_VERSION = "8.3" ] 
+then
+    curl -fL -o imagick.tgz 'https://pecl.php.net/get/imagick-3.7.0.tgz'; \
+	echo '5a364354109029d224bcbb2e82e15b248be9b641227f45e63425c06531792d3e *imagick.tgz' | sha256sum -c -; \
+	tar --extract --directory /tmp --file imagick.tgz imagick-3.7.0; \
+	grep '^//#endif$' /tmp/imagick-3.7.0/Imagick.stub.php; \
+	test "$(grep -c '^//#endif$' /tmp/imagick-3.7.0/Imagick.stub.php)" = '1'; \
+	sed -i -e 's!^//#endif$!#endif!' /tmp/imagick-3.7.0/Imagick.stub.php; \
+	grep '^//#endif$' /tmp/imagick-3.7.0/Imagick.stub.php && exit 1 || :; \
+	docker-php-ext-install /tmp/imagick-3.7.0; \
+	rm -rf imagick.tgz /tmp/imagick-3.7.0; \
+    docker-php-ext-enable imagick
+else
+    yes | pecl install imagick
+    docker-php-ext-enable imagick
+fi
 
 docker-php-ext-install gmp ldap xsl mysqli xml calendar imap gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl intl
 if [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ] || [ $PHP_VERSION = "8.3" ] 
