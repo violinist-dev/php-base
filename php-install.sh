@@ -112,7 +112,7 @@ then
 	rm -rf imagick.tgz /tmp/imagick-3.7.0; \
     docker-php-ext-enable imagick
 else
-    pecl install imagick
+    yes | pecl install imagick
     docker-php-ext-enable imagick
 fi
 
