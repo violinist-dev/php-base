@@ -121,9 +121,9 @@ if [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ] || [ $PHP_VERSION = "8.3
 then
     # XMLRPC does not work on 8.1
     # Sockets does not work on 8.1
-    docker-php-ext-enable ldap rdkafka xml calendar memcached mongodb apcu redis exif gd
+    docker-php-ext-enable ldap rdkafka calendar memcached mongodb apcu redis exif gd
 else
-    docker-php-ext-enable ldap rdkafka xml sockets xmlrpc calendar memcached mongodb apcu redis exif gd
+    docker-php-ext-enable ldap rdkafka sockets xmlrpc calendar memcached mongodb apcu redis exif gd
 fi
 
 curl -sS https://getcomposer.org/installer | php \

@@ -15,6 +15,7 @@
     "ext-redis": "*",
     "ext-gmp": "*",
     "ext-imagick": "*",
-    "ext-intl": "*"
+    "ext-intl": "*",
+    "ext-xml": "*"
   }
 }
