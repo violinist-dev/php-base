@@ -1,7 +1,7 @@
 set -eu
 
 apk add --no-cache unixodbc-dev gmp-dev yaml-dev ldb-dev libldap openldap-dev pcre-dev libxslt-dev imap-dev sudo git libpng libjpeg libpq libxml2 mysql-client openssh-client rsync patch bash imagemagick libzip-dev \
-    imagemagick-libs imagemagick-dev librdkafka-dev autoconf g++ make icu-dev libpng-dev libjpeg-turbo-dev postgresql-dev libxml2-dev bzip2-dev icu icu-dev libmemcached-dev $PHPIZE_DEPS
+    imagemagick-libs imagemagick-dev librdkafka-dev autoconf g++ make icu-dev libpng-dev libjpeg-turbo-dev postgresql-dev libxml2-dev bzip2-dev icu icu-dev libmemcached-dev linux-headers $PHPIZE_DEPS
 
 if [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ] || [ $PHP_VERSION = "8.3" ] 
 then
@@ -67,8 +67,8 @@ else
 fi
 
 docker-php-ext-configure intl
-docker-php-ext-install intl
-docker-php-ext-enable intl yaml sqlsrv pdo_sqlsrv decimal uuid mailparse msgpack 
+docker-php-ext-install intl sockets
+docker-php-ext-enable intl yaml sqlsrv pdo_sqlsrv decimal uuid mailparse msgpack sockets
 if [ $PHP_VERSION = "7.4" ] || [ $PHP_VERSION = "8.0" ] || [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ] || [ $PHP_VERSION = "8.3" ]
 then
     apk add --no-cache oniguruma-dev
@@ -82,21 +82,13 @@ then
     if [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ] || [ $PHP_VERSION = "8.3" ] 
     then
         # Not supported yet, fails to compile
-        echo "Skipping xmlrpc and sockets on PHP 8.1 / 8.2"
+        echo "Skipping xmlrpc on PHP 8.1 / 8.2 / 8.3"
     else
         # XMLRPC has moved to pecl from 8.0
         pecl install pecl install xmlrpc-1.0.0RC2
-        # Sockets is supported on 8.0
-        docker-php-ext-install sockets
-    fi
-    # In fact, PHP 8.1 seems to support it now?
-    if [ $PHP_VERSION = "8.1" ]
-    then
-        echo "installing sockets on PHP 8.1 after all"
-        docker-php-ext-install sockets
     fi
 else
-    docker-php-ext-install xmlrpc sockets
+    docker-php-ext-install xmlrpc
 fi
 
 if [ $PHP_VERSION = "8.3" ] 
@@ -116,14 +108,15 @@ else
     docker-php-ext-enable imagick
 fi
 
+
 docker-php-ext-install gmp ldap xsl mysqli xml calendar imap gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl
 if [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ] || [ $PHP_VERSION = "8.3" ] 
 then
     # XMLRPC does not work on 8.1
-    # Sockets does not work on 8.1
     docker-php-ext-enable ldap rdkafka calendar memcached mongodb apcu redis exif gd
 else
-    docker-php-ext-enable ldap rdkafka sockets xmlrpc calendar memcached mongodb apcu redis exif gd
+    docker-php-ext-enable ldap rdkafka xmlrpc calendar memcached mongodb apcu redis exif gd
+
 fi
 
 curl -sS https://getcomposer.org/installer | php \
