@@ -2,6 +2,9 @@
   "name": "test/test",
   "description": "A file containing the extensions we want to support",
   "require": {
+    "ext-json: "*",
+    "ext-exif": "*",
+    "ext-bcmath": "*",
     "ext-mongodb": "*",
     "ext-decimal": "*",
     "ext-sqlsrv": "*",
