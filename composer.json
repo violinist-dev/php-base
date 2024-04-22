@@ -4,7 +4,7 @@
   "require": {
     "ext-mbstring": "*",
     "ext-pdo_pgsql": "*",
-    "ext-pdo_mysql": "*',
+    "ext-pdo_mysql": "*",
     "ext-bz2": "*",
     "ext-json": "*",
     "ext-soap": "*",
