@@ -2,6 +2,7 @@
   "name": "test/test",
   "description": "A file containing the extensions we want to support",
   "require": {
+    "ext-bz2": "*",
     "ext-json": "*",
     "ext-soap": "*",
     "ext-exif": "*",
