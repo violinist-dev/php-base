@@ -2,6 +2,9 @@
   "name": "test/test",
   "description": "A file containing the extensions we want to support",
   "require": {
+    "ext-zip": "*",
+    "ext-bz2": "*",
+    "ext-pcntl": "*",
     "ext-mbstring": "*",
     "ext-pdo_pgsql": "*",
     "ext-pdo_mysql": "*",
