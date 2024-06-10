@@ -1,4 +1,6 @@
-FROM php:8.3-alpine
+ARG PHP_VERSION
+
+FROM php:${PHP_VERSION}-alpine
 MAINTAINER eiriksm <eirik@morland.no>
 
 ENV COMPOSER_DISCARD_CHANGES=1
@@ -7,7 +9,8 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 ENV COMPOSER_PROCESS_TIMEOUT=1200
 ENV DRUPAL_CONTRIB_SA_PATH=/root/drupal-contrib-sa
 
-ENV PHP_VERSION=8.3
+ARG PHP_VERSION
+ENV PHP_VERSION=${PHP_VERSION}
 
 COPY ./php-install.sh /root/
 COPY php-base.ini /usr/local/etc/php/conf.d/
