@@ -5,6 +5,7 @@ on:
     - cron: '0 10 * * *' # everyday at 10am
   push:
     branches: main
+  pull_request:
 
 env:
   REGISTRY: ghcr.io
@@ -51,9 +52,11 @@ jobs:
         with:
           platforms: linux/amd64,linux/arm64
           context: .
-          push: true
+          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.php-version }}-multi
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            PHP_VERSION=${{ matrix.php-version }}z
       - name: Wait to retry
         if: steps.buildx1.outcome != 'success'
         run: |
@@ -64,9 +67,11 @@ jobs:
         with:
           platforms: linux/amd64,linux/arm64
           context: .
-          push: true
+          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.php-version }}-multi
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            PHP_VERSION=${{ matrix.php-version }}
       -
         name: Clear
         if: always() && github.event_name != 'pull_request'
