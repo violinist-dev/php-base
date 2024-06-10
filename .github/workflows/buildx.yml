@@ -43,13 +43,6 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-          
-      - name: Set docker file variable 
-        id: file
-        run: |
-          FILE=Dockerfile-$(echo "${{ matrix.php-version }}" | sed "s/\.//")
-          echo $FILE
-          echo "FILE=$FILE" >> $GITHUB_OUTPUT
 
       - name: Build and push Docker image
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
@@ -58,10 +51,11 @@ jobs:
         with:
           platforms: linux/amd64,linux/arm64
           context: .
-          file: ${{ steps.file.outputs.FILE }}
-          push: true
+          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.php-version }}-multi
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            PHP_VERSION=${{ matrix.php-version }}z
       - name: Wait to retry
         if: steps.buildx1.outcome != 'success'
         run: |
@@ -72,10 +66,11 @@ jobs:
         with:
           platforms: linux/amd64,linux/arm64
           context: .
-          file: ${{ steps.file.outputs.FILE }}
-          push: true
+          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.php-version }}-multi
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            PHP_VERSION=${{ matrix.php-version }}
       -
         name: Clear
         if: always() && github.event_name != 'pull_request'
