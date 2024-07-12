@@ -37,12 +37,14 @@ fi
 
 yes | pecl install apcu igbinary rdkafka yaml decimal uuid msgpack
 
-if [ $PHP_VERSION = "8.4" ]
-then
-    echo "skip oauth on 8.4"
-else
+case $PHP_VERSION in
+  "8.4"*) 
+    echo "skipping oauth for PHP 8.4"
+    ;;
+  *)     
     yes | pecl install oauth
-fi
+    ;;
+esac
 
 if [ $PHP_VERSION = "7.2" ]
 then
