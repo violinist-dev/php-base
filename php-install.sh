@@ -68,12 +68,14 @@ else
     yes | pecl install sqlsrv pdo_sqlsrv
 fi
 
-if [ $PHP_VERSION = "8.0" ] || [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ] || [ $PHP_VERSION = "8.3" ]
-then
+case $PHP_VERSION in
+  "8."*) 
     mkdir -p /usr/src/php/ext/redis && curl -fsSL https://pecl.php.net/get/redis | tar xvz -C "/usr/src/php/ext/redis" --strip 1 && docker-php-ext-install redis
-else
+    ;;
+  *)     
     yes | pecl install redis-3.1.1
-fi
+    ;;
+esac
 
 docker-php-ext-configure intl
 docker-php-ext-install intl sockets
