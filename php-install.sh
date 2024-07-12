@@ -124,8 +124,16 @@ else
     docker-php-ext-enable imagick
 fi
 
+case $PHP_VERSION in
+  "8.4"*) 
+    echo "skipping imap for PHP 8.4"
+    ;;
+  *)     
+    docker-php-ext-install imap
+    ;;
+esac
 
-docker-php-ext-install gmp ldap xsl mysqli xml calendar imap gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl
+docker-php-ext-install gmp ldap xsl mysqli xml calendar gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl
 if [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ] || [ $PHP_VERSION = "8.3" ] 
 then
     # XMLRPC does not work on 8.1
