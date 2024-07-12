@@ -69,6 +69,9 @@ else
 fi
 
 case $PHP_VERSION in
+  "8.4"*)
+    echo "skipping redis for PHP 8.4"
+    ;;
   "8."*) 
     mkdir -p /usr/src/php/ext/redis && curl -fsSL https://pecl.php.net/get/redis | tar xvz -C "/usr/src/php/ext/redis" --strip 1 && docker-php-ext-install redis
     ;;
