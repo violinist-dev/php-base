@@ -83,13 +83,15 @@ esac
 docker-php-ext-configure intl
 docker-php-ext-install intl sockets
 docker-php-ext-enable intl yaml sqlsrv pdo_sqlsrv decimal uuid mailparse msgpack sockets
-if [ $PHP_VERSION = "7.4" ] || [ $PHP_VERSION = "8.0" ] || [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ] || [ $PHP_VERSION = "8.3" ]
-then
+case $PHP_VERSION in
+  7.4|"8."*) 
     apk add --no-cache oniguruma-dev
     docker-php-ext-configure gd --with-jpeg=/usr
-else
+    ;;
+  *)     
     docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr
-fi
+    ;;
+esac
 
 if [ $PHP_VERSION = "8.0" ] || [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ] || [ $PHP_VERSION = "8.3" ]
 then
