@@ -34,10 +34,17 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Build test image
+        if: matrix.php-version != '8.4'
         run: docker build -t php-base --build-arg PHP_VERSION=$PHP_VERSION .
         env:
           PHP_VERSION: ${{ matrix.php-version }}
-          
+
+      - name: Build test image
+        if: matrix.php-version == '8.4'
+        run: docker build -t php-base --build-arg PHP_VERSION=$PHP_VERSION .
+        env:
+          PHP_VERSION: '8.4alpha1'
+      
       - name: Output modules 
         run: docker run php-base php -m
 
