@@ -83,6 +83,8 @@ esac
 docker-php-ext-configure intl
 docker-php-ext-install intl sockets
 docker-php-ext-enable intl yaml sqlsrv pdo_sqlsrv decimal uuid mailparse msgpack sockets
+
+# gd has slightly different build arguments on newer PHP.
 case $PHP_VERSION in
   7.4|"8."*) 
     apk add --no-cache oniguruma-dev
@@ -93,19 +95,17 @@ case $PHP_VERSION in
     ;;
 esac
 
-if [ $PHP_VERSION = "8.0" ] || [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ] || [ $PHP_VERSION = "8.3" ]
-then
-    if [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ] || [ $PHP_VERSION = "8.3" ] 
-    then
-        # Not supported yet, fails to compile
-        echo "Skipping xmlrpc on PHP 8.1 / 8.2 / 8.3"
-    else
-        # XMLRPC has moved to pecl from 8.0
-        pecl install pecl install xmlrpc-1.0.0RC2
-    fi
-else
+case $PHP_VERSION in
+  8.0) 
+    pecl install xmlrpc-1.0.0RC2
+    ;;
+  "8."*|"8.4"*)
+    echo "skipping xmlrpc on PHP version $PHP_VERSION"
+    ;;
+  *)     
     docker-php-ext-install xmlrpc
-fi
+    ;;
+esac
 
 if [ $PHP_VERSION = "8.3" ] 
 then
