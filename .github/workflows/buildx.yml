@@ -48,6 +48,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Store the PHP base image name
+        id: image
+        env:
+          PHP_VERSION: matrix.php-version
+        run: |
+          USE_VERSION=$PHP_VERSION
+          echo "name=$USE_VERSION" >> "$GITHUB_OUTPUT"
       - name: Build and push Docker image
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         continue-on-error: true
