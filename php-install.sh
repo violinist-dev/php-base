@@ -108,7 +108,10 @@ case $PHP_VERSION in
 esac
 
 case $PHP_VERSION in
-  8.4*|8.3) 
+  8.4*)
+    echo "skipping imagick on PHP 8.4"
+    ;;
+  8.3) 
     curl -fL -o imagick.tgz 'https://pecl.php.net/get/imagick-3.7.0.tgz'; \
 	echo '5a364354109029d224bcbb2e82e15b248be9b641227f45e63425c06531792d3e *imagick.tgz' | sha256sum -c -; \
 	tar --extract --directory /tmp --file imagick.tgz imagick-3.7.0; \
