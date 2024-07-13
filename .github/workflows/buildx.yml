@@ -51,7 +51,7 @@ jobs:
       - name: Store the PHP base image name
         id: image
         env:
-          PHP_VERSION: matrix.php-version
+          PHP_VERSION: ${{ matrix.php-version }}
         run: |
           USE_VERSION=$PHP_VERSION
           if [ "$PHP_VERSION" == "8.4" ]; then
