@@ -107,8 +107,8 @@ case $PHP_VERSION in
     ;;
 esac
 
-if [ $PHP_VERSION = "8.3" ] 
-then
+case $PHP_VERSION in
+  8.4*|8.3) 
     curl -fL -o imagick.tgz 'https://pecl.php.net/get/imagick-3.7.0.tgz'; \
 	echo '5a364354109029d224bcbb2e82e15b248be9b641227f45e63425c06531792d3e *imagick.tgz' | sha256sum -c -; \
 	tar --extract --directory /tmp --file imagick.tgz imagick-3.7.0; \
@@ -119,10 +119,12 @@ then
 	docker-php-ext-install /tmp/imagick-3.7.0; \
 	rm -rf imagick.tgz /tmp/imagick-3.7.0; \
     docker-php-ext-enable imagick
-else
+    ;;
+  *)     
     yes | pecl install imagick
     docker-php-ext-enable imagick
-fi
+    ;;
+esac
 
 case $PHP_VERSION in
   "8.4"*) 
