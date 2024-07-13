@@ -38,7 +38,7 @@ fi
 yes | pecl install apcu igbinary rdkafka yaml decimal uuid msgpack
 
 case $PHP_VERSION in
-  "8.4"*) 
+  8.4*) 
     echo "skipping oauth for PHP 8.4"
     ;;
   *)     
@@ -69,10 +69,10 @@ else
 fi
 
 case $PHP_VERSION in
-  "8.4"*)
+  8.4*)
     echo "skipping redis for PHP 8.4"
     ;;
-  "8."*) 
+  8.*) 
     mkdir -p /usr/src/php/ext/redis && curl -fsSL https://pecl.php.net/get/redis | tar xvz -C "/usr/src/php/ext/redis" --strip 1 && docker-php-ext-install redis
     docker-php-ext-enable redis
     ;;
@@ -88,7 +88,7 @@ docker-php-ext-enable intl yaml sqlsrv pdo_sqlsrv decimal uuid mailparse msgpack
 
 # gd has slightly different build arguments on newer PHP.
 case $PHP_VERSION in
-  7.4|"8."*) 
+  7.4|8.*) 
     apk add --no-cache oniguruma-dev
     docker-php-ext-configure gd --with-jpeg=/usr
     ;;
@@ -100,12 +100,14 @@ esac
 case $PHP_VERSION in
   8.0) 
     pecl install xmlrpc-1.0.0RC2
+    docker-php-ext-enable xmlrpc
     ;;
-  "8."*|"8.4"*)
+  8.*|8.4*)
     echo "skipping xmlrpc on PHP version $PHP_VERSION"
     ;;
   *)     
     docker-php-ext-install xmlrpc
+    docker-php-ext-enable xmlrpc
     ;;
 esac
 
@@ -132,7 +134,7 @@ case $PHP_VERSION in
 esac
 
 case $PHP_VERSION in
-  "8.4"*) 
+  8.4*) 
     echo "skipping imap for PHP 8.4"
     ;;
   *)     
@@ -142,15 +144,6 @@ esac
 
 docker-php-ext-install gmp ldap xsl mysqli xml calendar gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl
 docker-php-ext-enable ldap rdkafka calendar memcached mongodb apcu exif gd
-
-case $PHP_VERSION in
-  8.4*|8.3|8.2|8.1) 
-    echo "skipping xmlrcp on $PHP_VERSION"
-    ;;
-  *)     
-    docker-php-ext-enable xmlrpc
-    ;;
-esac
 
 curl -sS https://getcomposer.org/installer | php \
   && mv composer.phar /usr/local/bin/composer
