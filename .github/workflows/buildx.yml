@@ -5,6 +5,9 @@ on:
     - cron: '0 10 * * *' # everyday at 10am
   push:
     branches: main
+  pull_request:
+    branches:
+      - main
 
 env:
   REGISTRY: ghcr.io
@@ -83,6 +86,7 @@ jobs:
     steps:
       - name: Trigger Workflow
         uses: actions/github-script@v6
+        if: ${{ github.event_name != 'pull_request' }}
         with:
           github-token: ${{ secrets.PAT }}
           script: |
