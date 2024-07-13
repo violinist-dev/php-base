@@ -66,7 +66,7 @@ jobs:
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.php-version }}-multi
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            PHP_VERSION=${{ matrix.php-version }}z
+            PHP_VERSION=${{ steps.image.outputs.name }}
       - name: Wait to retry
         if: steps.buildx1.outcome != 'success'
         run: |
@@ -81,7 +81,7 @@ jobs:
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.php-version }}-multi
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            PHP_VERSION=${{ matrix.php-version }}
+            PHP_VERSION=${{ steps.image.outputs.name }}
       -
         name: Clear
         if: always() && github.event_name != 'pull_request'
