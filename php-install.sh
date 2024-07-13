@@ -74,9 +74,11 @@ case $PHP_VERSION in
     ;;
   "8."*) 
     mkdir -p /usr/src/php/ext/redis && curl -fsSL https://pecl.php.net/get/redis | tar xvz -C "/usr/src/php/ext/redis" --strip 1 && docker-php-ext-install redis
+    docker-php-ext-enable redis
     ;;
   *)     
     yes | pecl install redis-3.1.1
+    docker-php-ext-enable redis
     ;;
 esac
 
@@ -139,7 +141,7 @@ case $PHP_VERSION in
 esac
 
 docker-php-ext-install gmp ldap xsl mysqli xml calendar gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl
-docker-php-ext-enable ldap rdkafka calendar memcached mongodb apcu redis exif gd
+docker-php-ext-enable ldap rdkafka calendar memcached mongodb apcu exif gd
 
 case $PHP_VERSION in
   8.4*|8.3|8.2|8.1) 
