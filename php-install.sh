@@ -134,14 +134,16 @@ case $PHP_VERSION in
 esac
 
 docker-php-ext-install gmp ldap xsl mysqli xml calendar gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl
-if [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ] || [ $PHP_VERSION = "8.3" ] 
-then
-    # XMLRPC does not work on 8.1
-    docker-php-ext-enable ldap rdkafka calendar memcached mongodb apcu redis exif gd
-else
-    docker-php-ext-enable ldap rdkafka xmlrpc calendar memcached mongodb apcu redis exif gd
+docker-php-ext-enable ldap rdkafka calendar memcached mongodb apcu redis exif gd
 
-fi
+case $PHP_VERSION in
+  8.4*|8.3|8.2|8.1) 
+    echo "skipping xmlrcp on $PHP_VERSION"
+    ;;
+  *)     
+    docker-php-ext-enable xmlrpc
+    ;;
+esac
 
 curl -sS https://getcomposer.org/installer | php \
   && mv composer.phar /usr/local/bin/composer
