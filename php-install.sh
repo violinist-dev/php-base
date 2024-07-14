@@ -35,7 +35,16 @@ else
 fi
 
 
-yes | pecl install apcu igbinary oauth rdkafka yaml decimal uuid msgpack
+yes | pecl install apcu igbinary rdkafka yaml decimal uuid msgpack
+
+case $PHP_VERSION in
+  8.4*) 
+    echo "skipping oauth for PHP 8.4"
+    ;;
+  *)     
+    yes | pecl install oauth
+    ;;
+esac
 
 if [ $PHP_VERSION = "7.2" ]
 then
@@ -59,40 +68,54 @@ else
     yes | pecl install sqlsrv pdo_sqlsrv
 fi
 
-if [ $PHP_VERSION = "8.0" ] || [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ] || [ $PHP_VERSION = "8.3" ]
-then
+case $PHP_VERSION in
+  8.4*)
+    echo "skipping redis for PHP 8.4"
+    ;;
+  8.*) 
     mkdir -p /usr/src/php/ext/redis && curl -fsSL https://pecl.php.net/get/redis | tar xvz -C "/usr/src/php/ext/redis" --strip 1 && docker-php-ext-install redis
-else
+    docker-php-ext-enable redis
+    ;;
+  *)     
     yes | pecl install redis-3.1.1
-fi
+    docker-php-ext-enable redis
+    ;;
+esac
 
 docker-php-ext-configure intl
 docker-php-ext-install intl sockets
 docker-php-ext-enable intl yaml sqlsrv pdo_sqlsrv decimal uuid mailparse msgpack sockets
-if [ $PHP_VERSION = "7.4" ] || [ $PHP_VERSION = "8.0" ] || [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ] || [ $PHP_VERSION = "8.3" ]
-then
+
+# gd has slightly different build arguments on newer PHP.
+case $PHP_VERSION in
+  7.4|8.*) 
     apk add --no-cache oniguruma-dev
     docker-php-ext-configure gd --with-jpeg=/usr
-else
+    ;;
+  *)     
     docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr
-fi
+    ;;
+esac
 
-if [ $PHP_VERSION = "8.0" ] || [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ] || [ $PHP_VERSION = "8.3" ]
-then
-    if [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ] || [ $PHP_VERSION = "8.3" ] 
-    then
-        # Not supported yet, fails to compile
-        echo "Skipping xmlrpc on PHP 8.1 / 8.2 / 8.3"
-    else
-        # XMLRPC has moved to pecl from 8.0
-        pecl install pecl install xmlrpc-1.0.0RC2
-    fi
-else
+case $PHP_VERSION in
+  8.0) 
+    pecl install xmlrpc-1.0.0RC2
+    docker-php-ext-enable xmlrpc
+    ;;
+  8.*|8.4*)
+    echo "skipping xmlrpc on PHP version $PHP_VERSION"
+    ;;
+  *)     
     docker-php-ext-install xmlrpc
-fi
+    docker-php-ext-enable xmlrpc
+    ;;
+esac
 
-if [ $PHP_VERSION = "8.3" ] 
-then
+case $PHP_VERSION in
+  8.4*)
+    echo "skipping imagick on PHP 8.4"
+    ;;
+  8.3) 
     curl -fL -o imagick.tgz 'https://pecl.php.net/get/imagick-3.7.0.tgz'; \
 	echo '5a364354109029d224bcbb2e82e15b248be9b641227f45e63425c06531792d3e *imagick.tgz' | sha256sum -c -; \
 	tar --extract --directory /tmp --file imagick.tgz imagick-3.7.0; \
@@ -103,21 +126,24 @@ then
 	docker-php-ext-install /tmp/imagick-3.7.0; \
 	rm -rf imagick.tgz /tmp/imagick-3.7.0; \
     docker-php-ext-enable imagick
-else
+    ;;
+  *)     
     yes | pecl install imagick
     docker-php-ext-enable imagick
-fi
+    ;;
+esac
 
+case $PHP_VERSION in
+  8.4*) 
+    echo "skipping imap for PHP 8.4"
+    ;;
+  *)     
+    docker-php-ext-install imap
+    ;;
+esac
 
-docker-php-ext-install gmp ldap xsl mysqli xml calendar imap gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl
-if [ $PHP_VERSION = "8.1" ] || [ $PHP_VERSION = "8.2" ] || [ $PHP_VERSION = "8.3" ] 
-then
-    # XMLRPC does not work on 8.1
-    docker-php-ext-enable ldap rdkafka calendar memcached mongodb apcu redis exif gd
-else
-    docker-php-ext-enable ldap rdkafka xmlrpc calendar memcached mongodb apcu redis exif gd
-
-fi
+docker-php-ext-install gmp ldap xsl mysqli xml calendar gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl
+docker-php-ext-enable ldap rdkafka calendar memcached mongodb apcu exif gd
 
 curl -sS https://getcomposer.org/installer | php \
   && mv composer.phar /usr/local/bin/composer

@@ -30,6 +30,7 @@ jobs:
           - "8.1"
           - "8.2"
           - "8.3"
+          - "8.4"
     steps:
       -
         name: Checkout
@@ -47,6 +48,16 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Store the PHP base image name
+        id: image
+        env:
+          PHP_VERSION: ${{ matrix.php-version }}
+        run: |
+          USE_VERSION=$PHP_VERSION
+          if [ "$PHP_VERSION" == "8.4" ]; then
+            USE_VERSION="8.4.0alpha1"
+          fi
+          echo "name=$USE_VERSION" >> "$GITHUB_OUTPUT"
       - name: Build and push Docker image
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         continue-on-error: true
@@ -58,7 +69,7 @@ jobs:
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.php-version }}-multi
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            PHP_VERSION=${{ matrix.php-version }}z
+            PHP_VERSION=${{ steps.image.outputs.name }}
       - name: Wait to retry
         if: steps.buildx1.outcome != 'success'
         run: |
@@ -73,7 +84,7 @@ jobs:
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.php-version }}-multi
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            PHP_VERSION=${{ matrix.php-version }}
+            PHP_VERSION=${{ steps.image.outputs.name }}
       -
         name: Clear
         if: always() && github.event_name != 'pull_request'
