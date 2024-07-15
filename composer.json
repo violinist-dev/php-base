@@ -28,6 +28,8 @@
     "ext-gmp": "*",
     "ext-imagick": "*",
     "ext-intl": "*",
-    "ext-xml": "*"
+    "ext-xml": "*",
+    "ext-ctype": "*",
+    "ext-curl": "*"
   }
 }
