@@ -89,6 +89,7 @@ docker-php-ext-enable intl yaml sqlsrv pdo_sqlsrv decimal uuid mailparse msgpack
 # ftp is compiled into PHP in < 8.2.
 case $PHP_VERSION in
   8.4*) 
+    docker-php-ext-install ftp
     docker-php-ext-enable ftp
     ;;
   *)     
