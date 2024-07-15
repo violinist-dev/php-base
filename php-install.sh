@@ -84,7 +84,17 @@ esac
 
 docker-php-ext-configure intl
 docker-php-ext-install intl sockets
-docker-php-ext-enable ftp intl yaml sqlsrv pdo_sqlsrv decimal uuid mailparse msgpack sockets
+docker-php-ext-enable intl yaml sqlsrv pdo_sqlsrv decimal uuid mailparse msgpack sockets
+
+# ftp is compiled into PHP in < 8.2.
+case $PHP_VERSION in
+  8.4*) 
+    docker-php-ext-enable ftp
+    ;;
+  *)     
+    echo "ftp extension already present on $PHP_VERSION"
+    ;;
+esac
 
 # gd has slightly different build arguments on newer PHP.
 case $PHP_VERSION in
