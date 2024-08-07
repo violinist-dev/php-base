@@ -159,8 +159,6 @@ docker-php-ext-enable ldap rdkafka calendar memcached mongodb apcu exif gd
 curl -sS https://getcomposer.org/installer | php \
   && mv composer.phar /usr/local/bin/composer
 
-composer self-update --1
-
 mkdir ~/.ssh/
 ssh-keyscan -t rsa,dsa git.drupal.org >> ~/.ssh/known_hosts
 ssh-keyscan -t rsa,dsa gitlab.com >> ~/.ssh/known_hosts
