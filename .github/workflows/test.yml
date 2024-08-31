@@ -43,7 +43,7 @@ jobs:
         if: matrix.php-version == '8.4'
         run: docker build -t php-base --build-arg PHP_VERSION=$PHP_VERSION .
         env:
-          PHP_VERSION: '8.4.0alpha2'
+          PHP_VERSION: '8.4.0beta3'
       
       - name: Output modules 
         run: docker run php-base php -m
