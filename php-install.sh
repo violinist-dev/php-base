@@ -168,12 +168,3 @@ ssh-keyscan -t rsa,dsa github.com >> ~/.ssh/known_hosts
 wget https://getcomposer.org/download/latest-2.2.x/composer.phar -O /tmp/composer22
 chmod 755 /tmp/composer22
 mv /tmp/composer22 /usr/local/bin/composer22
-
-case $PHP_VERSION in
-  8.4*) 
-    echo "error_reporting = E_ALL & ~E_DEPRECATED" > /usr/local/etc/php/conf.d/errors.ini
-    ;;
-  *)     
-    echo "No adjustment of error reporting on $PHP_VERSION"
-    ;;
-esac
