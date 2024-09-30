@@ -54,7 +54,7 @@ jobs:
         run: |
           USE_VERSION=$PHP_VERSION
           if [ "$PHP_VERSION" == "8.4" ]; then
-            USE_VERSION="8.4.0beta5"
+            USE_VERSION="8.4.0RC1"
           fi
           echo "name=$USE_VERSION" >> "$GITHUB_OUTPUT"
       - name: Build and push Docker image
