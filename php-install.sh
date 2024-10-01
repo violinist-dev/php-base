@@ -49,7 +49,13 @@ esac
 case $PHP_VERSION in
   8.4*)
     echo "Installing mailparse from source"
-    yes | pecl install mailparse
+    git clone https://github.com/php/pecl-mail-mailparse
+    cd pecl-mail-mailparse
+    phpize
+    ./configure
+    make
+    make install
+    cd -
     ;;
   *)
     yes | pecl install mailparse
