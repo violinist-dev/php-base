@@ -48,7 +48,7 @@ jobs:
         run: docker run php-base php -m
 
       - run: |
-          num=docker run php-base php -r "print null" | awk 'END {print NR}'
+          num=$(docker run php-base php -r "print null" | awk 'END {print NR}')
           echo $num
 
       - name: Check requirements
