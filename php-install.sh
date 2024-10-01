@@ -46,12 +46,15 @@ case $PHP_VERSION in
     ;;
 esac
 
-if [ $PHP_VERSION = "7.2" ]
-then
-    yes | pecl install mailparse-3.1.3
-else
+case $PHP_VERSION in
+  8.4*)
+    echo "Installing mailparse from source"
     yes | pecl install mailparse
-fi
+    ;;
+  *)
+    yes | pecl install mailparse
+    ;;
+esac
 
 echo "" | pecl install memcached
 
