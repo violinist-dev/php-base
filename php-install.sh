@@ -157,7 +157,7 @@ esac
 
 case $PHP_VERSION in
   8.4*) 
-    echo "skipping imap for PHP 8.4"
+    docker-php-ext-install imap
     ;;
   *)     
     docker-php-ext-install imap
