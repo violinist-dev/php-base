@@ -4,7 +4,7 @@ apk add --no-cache unixodbc-dev gmp-dev yaml-dev ldb-dev libldap openldap-dev pc
     imagemagick-libs imagemagick-dev librdkafka-dev autoconf g++ make icu-dev libpng-dev libjpeg-turbo-dev postgresql-dev libxml2-dev bzip2-dev icu icu-dev libmemcached-dev linux-headers $PHPIZE_DEPS
 
 case $PHP_VERSION in
-  8.3|8.2|8.1) 
+  8.4*|8.3|8.2|8.1) 
     apk add --no-cache mpdecimal-dev
     ;;
   *)     
