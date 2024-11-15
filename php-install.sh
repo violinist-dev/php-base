@@ -159,7 +159,7 @@ case $PHP_VERSION in
   8.4*)
     apk add --no-cache krb5-dev
     yes | pecl install imap
-    docker-php-ext-install imap
+    docker-php-ext-enable imap
     ;;
   *)
     docker-php-ext-install imap
