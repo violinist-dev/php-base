@@ -156,10 +156,11 @@ case $PHP_VERSION in
 esac
 
 case $PHP_VERSION in
-  8.4*) 
+  8.4*)
+    yes | pecl install imap
     docker-php-ext-install imap
     ;;
-  *)     
+  *)
     docker-php-ext-install imap
     ;;
 esac
