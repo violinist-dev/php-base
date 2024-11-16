@@ -37,16 +37,7 @@ else
 fi
 
 
-yes | pecl install apcu igbinary rdkafka yaml decimal uuid msgpack
-
-case $PHP_VERSION in
-  8.4*) 
-    echo "skipping oauth for PHP 8.4"
-    ;;
-  *)     
-    yes | pecl install oauth
-    ;;
-esac
+yes | pecl install oauth apcu igbinary rdkafka yaml decimal uuid msgpack
 
 case $PHP_VERSION in
   8.4*)
