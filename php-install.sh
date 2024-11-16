@@ -37,16 +37,7 @@ else
 fi
 
 
-yes | pecl install apcu igbinary rdkafka yaml decimal uuid msgpack
-
-case $PHP_VERSION in
-  8.4*) 
-    echo "skipping oauth for PHP 8.4"
-    ;;
-  *)     
-    yes | pecl install oauth
-    ;;
-esac
+yes | pecl install oauth apcu igbinary rdkafka yaml decimal uuid msgpack
 
 case $PHP_VERSION in
   8.4*)
@@ -95,7 +86,7 @@ esac
 
 docker-php-ext-configure intl
 docker-php-ext-install intl sockets
-docker-php-ext-enable intl yaml sqlsrv pdo_sqlsrv decimal uuid mailparse msgpack sockets
+docker-php-ext-enable intl yaml sqlsrv pdo_sqlsrv decimal uuid mailparse msgpack sockets oauth
 
 # ftp is compiled into PHP in < 8.2.
 case $PHP_VERSION in
