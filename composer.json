@@ -27,6 +27,7 @@
     "ext-mailparse": "*",
     "ext-mbstring": "*",
     "ext-mongodb": "*",
+    "ext-oauth": "*",
     "ext-pcntl": "*",
     "ext-pcre": "*",
     "ext-pdo_mysql": "*",
