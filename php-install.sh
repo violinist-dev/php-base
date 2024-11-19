@@ -81,7 +81,8 @@ case $PHP_VERSION in
     ;;
 esac
 
-docker-php-ext-configure intl gettext
+docker-php-ext-configure intl
+docker-php-ext-configure gettext
 docker-php-ext-install intl gettext sockets
 docker-php-ext-enable intl yaml sqlsrv pdo_sqlsrv decimal uuid mailparse msgpack sockets oauth
 
