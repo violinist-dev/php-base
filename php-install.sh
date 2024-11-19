@@ -1,7 +1,7 @@
 set -eu
 
 apk add --no-cache unixodbc-dev gmp-dev yaml-dev ldb-dev libldap openldap-dev pcre-dev libxslt-dev imap-dev sudo git libpng libjpeg libpq libxml2 mysql-client openssh-client rsync patch bash imagemagick libzip-dev \
-    imagemagick-libs imagemagick-dev librdkafka-dev autoconf g++ make icu-dev libpng-dev libjpeg-turbo-dev postgresql-dev libxml2-dev bzip2-dev icu icu-dev libmemcached-dev linux-headers $PHPIZE_DEPS
+    imagemagick-libs gettext-dev imagemagick-dev librdkafka-dev autoconf g++ make icu-dev libpng-dev libjpeg-turbo-dev postgresql-dev libxml2-dev bzip2-dev icu icu-dev libmemcached-dev linux-headers $PHPIZE_DEPS
 
 case $PHP_VERSION in
   8.4*|8.3|8.2|8.1) 
@@ -81,8 +81,8 @@ case $PHP_VERSION in
     ;;
 esac
 
-docker-php-ext-configure intl
-docker-php-ext-install intl sockets
+docker-php-ext-configure intl gettext
+docker-php-ext-install intl gettext sockets
 docker-php-ext-enable intl yaml sqlsrv pdo_sqlsrv decimal uuid mailparse msgpack sockets oauth
 
 # ftp is compiled into PHP in < 8.2.
