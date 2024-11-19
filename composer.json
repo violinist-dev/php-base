@@ -15,6 +15,7 @@
     "ext-filter": "*",
     "ext-ftp": "*",
     "ext-gd": "*",
+    "ext-gettext": "*",
     "ext-gmp": "*",
     "ext-hash": "*",
     "ext-iconv": "*",
