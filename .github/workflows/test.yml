@@ -56,5 +56,4 @@ jobs:
           fi
 
       - name: Check requirements
-        if: matrix.php-version != '8.4'
         run: docker run -w "/test" -v $(pwd):/test php-base composer install
