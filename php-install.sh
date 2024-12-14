@@ -162,10 +162,10 @@ curl -sS https://getcomposer.org/installer | php \
   && mv composer.phar /usr/local/bin/composer
 
 mkdir ~/.ssh/
-ssh-keyscan -t rsa,dsa git.drupal.org >> ~/.ssh/known_hosts
-ssh-keyscan -t rsa,dsa gitlab.com >> ~/.ssh/known_hosts
-ssh-keyscan -t rsa,dsa bitbucket.org >> ~/.ssh/known_hosts
-ssh-keyscan -t rsa,dsa github.com >> ~/.ssh/known_hosts
+ssh-keyscan -t rsa git.drupal.org >> ~/.ssh/known_hosts
+ssh-keyscan -t rsa gitlab.com >> ~/.ssh/known_hosts
+ssh-keyscan -t rsa bitbucket.org >> ~/.ssh/known_hosts
+ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
 
 git clone https://github.com/FriendsOfPHP/security-advisories /root/.symfony/cache/security-advisories
 git clone https://github.com/violinist-dev/drupal-contrib-sa /root/drupal-contrib-sa
