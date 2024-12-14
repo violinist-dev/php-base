@@ -1,7 +1,7 @@
 set -eu
 
 apk add --no-cache unixodbc-dev gmp-dev yaml-dev ldb-dev libldap openldap-dev pcre-dev libxslt-dev imap-dev sudo git libpng libjpeg libpq libxml2 mysql-client openssh-client rsync patch bash imagemagick libzip-dev \
-    imagemagick-libs imagemagick-dev librdkafka-dev autoconf g++ make icu-dev libpng-dev libjpeg-turbo-dev postgresql-dev libxml2-dev bzip2-dev icu icu-dev libmemcached-dev linux-headers $PHPIZE_DEPS
+    imagemagick-libs gettext gettext-dev imagemagick-dev librdkafka-dev autoconf g++ make icu-dev libpng-dev libjpeg-turbo-dev postgresql-dev libxml2-dev bzip2-dev icu icu-dev libmemcached-dev linux-headers $PHPIZE_DEPS
 
 case $PHP_VERSION in
   8.4*|8.3|8.2|8.1) 
@@ -82,7 +82,8 @@ case $PHP_VERSION in
 esac
 
 docker-php-ext-configure intl
-docker-php-ext-install intl sockets
+docker-php-ext-configure gettext
+docker-php-ext-install intl gettext sockets
 docker-php-ext-enable intl yaml sqlsrv pdo_sqlsrv decimal uuid mailparse msgpack sockets oauth
 
 # ftp is compiled into PHP in < 8.2.
@@ -161,10 +162,10 @@ curl -sS https://getcomposer.org/installer | php \
   && mv composer.phar /usr/local/bin/composer
 
 mkdir ~/.ssh/
-ssh-keyscan -t rsa,dsa git.drupal.org >> ~/.ssh/known_hosts
-ssh-keyscan -t rsa,dsa gitlab.com >> ~/.ssh/known_hosts
-ssh-keyscan -t rsa,dsa bitbucket.org >> ~/.ssh/known_hosts
-ssh-keyscan -t rsa,dsa github.com >> ~/.ssh/known_hosts
+ssh-keyscan -t rsa git.drupal.org >> ~/.ssh/known_hosts
+ssh-keyscan -t rsa gitlab.com >> ~/.ssh/known_hosts
+ssh-keyscan -t rsa bitbucket.org >> ~/.ssh/known_hosts
+ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
 
 git clone https://github.com/FriendsOfPHP/security-advisories /root/.symfony/cache/security-advisories
 git clone https://github.com/violinist-dev/drupal-contrib-sa /root/drupal-contrib-sa
