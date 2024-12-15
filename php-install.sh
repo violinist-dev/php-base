@@ -124,7 +124,7 @@ esac
 
 case $PHP_VERSION in
   8.4*)
-    curl -L -o /tmp/imagick.tar.gz https://github.com/Imagick/imagick/archive/tags/${IMAGICK_VERSION}.tar.gz \
+    curl -L -o /tmp/imagick.tar.gz https://github.com/Imagick/imagick/archive/tags/3.7.0.tar.gz \
     && tar --strip-components=1 -xf /tmp/imagick.tar.gz \
     && sed -i 's/php_strtolower/zend_str_tolower/g' imagick.c \
     && phpize \
