@@ -59,7 +59,7 @@ jobs:
         continue-on-error: true
         id: buildx1
         with:
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/arm64
           context: .
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.php-version }}-multi
@@ -71,10 +71,10 @@ jobs:
         run: |
           sleep 60
       - name: Build and push Docker image
-        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        uses: docker/build-push-action@v6
         if: steps.buildx1.outcome != 'success'
         with:
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/arm64
           context: .
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.php-version }}-multi
