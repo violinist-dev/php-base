@@ -59,7 +59,7 @@ jobs:
         continue-on-error: true
         id: buildx1
         with:
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64
           context: .
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.php-version }}-multi
