@@ -59,7 +59,7 @@ jobs:
         continue-on-error: true
         id: buildx1
         with:
-          platforms: linux/arm64
+          platforms: linux/amd64,linux/arm64
           context: .
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.php-version }}-multi
@@ -74,7 +74,7 @@ jobs:
         uses: docker/build-push-action@v6
         if: steps.buildx1.outcome != 'success'
         with:
-          platforms: linux/arm64
+          platforms: linux/amd64,linux/arm64
           context: .
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.php-version }}-multi
