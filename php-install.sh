@@ -21,12 +21,11 @@ esac
 
 pecl channel-update pecl.php.net
 
-
 case $PHP_VERSION in
   7.3)
     yes | pecl install mongodb-1.16.2
     ;;
-  8.0)
+  7.4|8.0)
     yes | pecl install mongodb-1.20.1
     ;;
   *)
