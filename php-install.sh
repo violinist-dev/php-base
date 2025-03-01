@@ -26,6 +26,7 @@ case $PHP_VERSION in
     yes | pecl install mongodb-1.16.2
     ;;
   7.4|8.0)
+    export PHP_MONGODB_DEVELOPER_FLAGS=no
     yes | pecl install mongodb-1.20.1
     ;;
   *)
