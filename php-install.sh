@@ -32,8 +32,7 @@ case $PHP_VERSION in
   *)
     echo "yes" | pecl install mongodb
     ;;
-fi
-
+esac
 
 yes | pecl install oauth apcu igbinary rdkafka yaml decimal uuid msgpack
 
