@@ -53,18 +53,20 @@ esac
 
 echo "" | pecl install memcached
 
-if [ $PHP_VERSION = "7.2" ]
-then
+case $PHP_VERSION in
+  7.2)
     yes | pecl install sqlsrv-5.8.1 pdo_sqlsrv-5.8.1
-elif [ $PHP_VERSION = "7.3" ] || [ $PHP_VERSION = "7.4" ]
-then
+    ;;
+  7.3|7.4)
     yes | pecl install sqlsrv-5.10.1 pdo_sqlsrv-5.10.1
-elif [ $PHP_VERSION = "8.0" ]
-then
+    ;;
+  8.0)
     yes | pecl install sqlsrv-5.11.1 pdo_sqlsrv-5.11.1
-else
+    ;;
+  *)
     yes | pecl install sqlsrv pdo_sqlsrv
-fi
+    ;;
+esac
 
 case $PHP_VERSION in
   8.*) 
