@@ -12,6 +12,7 @@ ENV DRUPAL_CONTRIB_SA_PATH=/root/drupal-contrib-sa
 ARG PHP_VERSION
 ENV PHP_VERSION=${PHP_VERSION}
 
+COPY --from=composer/composer:latest-bin /composer /usr/bin/composer
 COPY ./php-install.sh /root/
 COPY php-base.ini /usr/local/etc/php/conf.d/
 
