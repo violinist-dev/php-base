@@ -40,13 +40,17 @@ jobs:
       - name: Output modules 
         run: docker run php-base php -m
 
-      - run: |
+      - name: Check for PHP warnings or notices
+        run: |
           num=$(docker run php-base php -r "print null;" | awk 'END {print NR}')
           # if this prints a line or 2 that can be warnings and what not. don't want those.
           if [ $num != "0" ]
           then
             exit 1
           fi
+
+      - name: Print composer version
+        run: composer --version
 
       - name: Check requirements
         run: docker run -w "/test" -v $(pwd):/test php-base composer install
