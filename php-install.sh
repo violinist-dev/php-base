@@ -28,6 +28,8 @@ case $PHP_VERSION in
   7.4|8.0)
     echo "yes" | pecl install mongodb-1.20.1
     ;;
+  "8.5*")
+    echo "Skipping mongo db driver for PHP $PHP_VERSION"
   *)
     echo "yes" | pecl install mongodb
     ;;
