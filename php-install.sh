@@ -82,6 +82,9 @@ case $PHP_VERSION in
   8.0)
     yes | pecl install sqlsrv-5.11.1 pdo_sqlsrv-5.11.1
     ;;
+  8.5*)
+    echo "Skipping sqlsrv on $PHP_VERSION"
+    ;;
   *)
     yes | pecl install sqlsrv pdo_sqlsrv
     ;;
