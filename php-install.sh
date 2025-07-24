@@ -156,7 +156,7 @@ yes | pecl install imagick
 docker-php-ext-enable imagick
 
 case $PHP_VERSION in
-  8.4*)
+  8.4*|8.5*)
     apk add --no-cache krb5-dev
     yes | pecl install imap
     docker-php-ext-enable imap
