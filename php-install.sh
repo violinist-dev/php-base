@@ -140,9 +140,6 @@ esac
 docker-php-ext-install gmp ldap xsl mysqli xml calendar gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl
 docker-php-ext-enable ldap rdkafka calendar memcached mongodb apcu exif gd
 
-curl -sS https://getcomposer.org/installer | php \
-  && mv composer.phar /usr/local/bin/composer
-
 mkdir ~/.ssh/
 ssh-keyscan -t rsa git.drupal.org >> ~/.ssh/known_hosts
 ssh-keyscan -t rsa gitlab.com >> ~/.ssh/known_hosts
