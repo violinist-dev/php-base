@@ -69,6 +69,7 @@ case $PHP_VERSION in
     ;;
   *)
     echo "" | pecl install memcached
+    docker-php-ext-enable memcached
     ;;
 esac
 
@@ -167,7 +168,7 @@ case $PHP_VERSION in
 esac
 
 docker-php-ext-install gmp ldap xsl mysqli xml calendar gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl
-docker-php-ext-enable ldap rdkafka calendar memcached mongodb apcu exif gd
+docker-php-ext-enable ldap rdkafka calendar mongodb apcu exif gd
 
 mkdir ~/.ssh/
 ssh-keyscan -t rsa git.drupal.org >> ~/.ssh/known_hosts
