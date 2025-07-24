@@ -63,7 +63,14 @@ case $PHP_VERSION in
     ;;
 esac
 
-echo "" | pecl install memcached
+case $PHP_VERSION in
+  8.5*)
+    echo "Skipping memcached for PHP $PHP_VERSION"
+    ;;
+  *)
+    yes | pecl install memcached
+    ;;
+esac
 
 case $PHP_VERSION in
   7.2)
