@@ -104,7 +104,17 @@ esac
 docker-php-ext-configure intl
 docker-php-ext-configure gettext
 docker-php-ext-install intl gettext sockets
-docker-php-ext-enable intl yaml sqlsrv pdo_sqlsrv decimal uuid mailparse msgpack sockets oauth
+docker-php-ext-enable intl yaml decimal uuid mailparse msgpack sockets oauth
+
+case $PHP_VERSION in
+  8.5*)
+    echo "Skipping sqlsrv pdo_sqlsrv for PHP $PHP_VERSION"
+    ;;
+  *)
+    docker-php-ext-enable sqlsrv pdo_sqlsrv
+    ;;
+esac
+
 
 # ftp is compiled into PHP in < 8.2.
 case $PHP_VERSION in
