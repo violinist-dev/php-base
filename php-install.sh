@@ -30,6 +30,7 @@ case $PHP_VERSION in
     ;;
   "8.5*")
     echo "Skipping mongo db driver for PHP $PHP_VERSION"
+    ;;
   *)
     echo "yes" | pecl install mongodb
     ;;
