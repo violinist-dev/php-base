@@ -36,7 +36,16 @@ case $PHP_VERSION in
     ;;
 esac
 
-yes | pecl install oauth apcu igbinary rdkafka yaml decimal uuid msgpack
+yes | pecl install apcu igbinary rdkafka yaml decimal uuid msgpack
+
+case $PHP_VERSION in
+  8.5*)
+    echo "Skipping oauth extension for $PHP_VERSION"
+    ;;
+  *)
+    yes | pecl install oauth
+    ;;
+esac
 
 case $PHP_VERSION in
   8.4*)
