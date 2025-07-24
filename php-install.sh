@@ -36,6 +36,15 @@ case $PHP_VERSION in
     ;;
 esac
 
+case $PHP_VERSION in
+  8.5*)
+    echo "Skipping mongodb for PHP $PHP_VERSION"
+    ;;
+  *)
+    docker-php-ext-enable mongodb
+    ;;
+esac
+
 yes | pecl install apcu igbinary rdkafka yaml decimal uuid msgpack
 
 case $PHP_VERSION in
@@ -168,7 +177,7 @@ case $PHP_VERSION in
 esac
 
 docker-php-ext-install gmp ldap xsl mysqli xml calendar gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl
-docker-php-ext-enable ldap rdkafka calendar mongodb apcu exif gd
+docker-php-ext-enable ldap rdkafka calendar apcu exif gd
 
 mkdir ~/.ssh/
 ssh-keyscan -t rsa git.drupal.org >> ~/.ssh/known_hosts
