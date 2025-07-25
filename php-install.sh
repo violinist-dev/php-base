@@ -12,14 +12,43 @@ case $PHP_VERSION in
   7.4|8.0)
     echo "yes" | pecl install mongodb-1.20.1
     ;;
+  8.5*)
+    echo "Skipping mongo db driver for PHP $PHP_VERSION"
+    ;;
   *)
     echo "yes" | pecl install mongodb
     ;;
 esac
 
-yes | pecl install oauth apcu igbinary rdkafka yaml decimal uuid msgpack mailparse
+case $PHP_VERSION in
+  8.5*)
+    echo "Skipping mongodb for PHP $PHP_VERSION"
+    ;;
+  *)
+    docker-php-ext-enable mongodb
+    ;;
+esac
 
-echo "" | pecl install memcached
+yes | pecl install apcu igbinary rdkafka yaml decimal uuid msgpack mailparse
+
+case $PHP_VERSION in
+  8.5*)
+    echo "Skipping oauth extension for $PHP_VERSION"
+    ;;
+  *)
+    yes | pecl install oauth
+    ;;
+esac
+
+case $PHP_VERSION in
+  8.5*)
+    echo "Skipping memcached for PHP $PHP_VERSION"
+    ;;
+  *)
+    echo "" | pecl install memcached
+    docker-php-ext-enable memcached
+    ;;
+esac
 
 case $PHP_VERSION in
   7.2)
@@ -30,6 +59,9 @@ case $PHP_VERSION in
     ;;
   8.0)
     yes | pecl install sqlsrv-5.11.1 pdo_sqlsrv-5.11.1
+    ;;
+  8.5*)
+    echo "Skipping sqlsrv on $PHP_VERSION"
     ;;
   *)
     yes | pecl install sqlsrv pdo_sqlsrv
@@ -50,7 +82,17 @@ esac
 docker-php-ext-configure intl
 docker-php-ext-configure gettext
 docker-php-ext-install intl gettext sockets
-docker-php-ext-enable intl yaml sqlsrv pdo_sqlsrv decimal uuid mailparse msgpack sockets oauth
+docker-php-ext-enable intl yaml decimal uuid mailparse msgpack sockets
+
+case $PHP_VERSION in
+  8.5*)
+    echo "Skipping sqlsrv pdo_sqlsrv oauth for PHP $PHP_VERSION"
+    ;;
+  *)
+    docker-php-ext-enable sqlsrv pdo_sqlsrv oauth
+    ;;
+esac
+
 
 # ftp is compiled into PHP in < 8.2.
 case $PHP_VERSION in
@@ -92,7 +134,7 @@ yes | pecl install imagick
 docker-php-ext-enable imagick
 
 case $PHP_VERSION in
-  8.4*)
+  8.4*|8.5*)
     apk add --no-cache krb5-dev
     yes | pecl install imap
     docker-php-ext-enable imap
@@ -103,7 +145,7 @@ case $PHP_VERSION in
 esac
 
 docker-php-ext-install gmp ldap xsl mysqli xml calendar gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl
-docker-php-ext-enable ldap rdkafka calendar memcached mongodb apcu exif gd
+docker-php-ext-enable ldap rdkafka calendar apcu exif gd
 
 mkdir ~/.ssh/
 ssh-keyscan -t rsa git.drupal.org >> ~/.ssh/known_hosts

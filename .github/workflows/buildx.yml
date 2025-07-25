@@ -30,6 +30,7 @@ jobs:
           - "8.2"
           - "8.3"
           - "8.4"
+          - "8.5"
     steps:
       -
         name: Checkout
@@ -53,6 +54,9 @@ jobs:
           PHP_VERSION: ${{ matrix.php-version }}
         run: |
           USE_VERSION=$PHP_VERSION
+          if [ "$PHP_VERSION" == "8.5" ]; then
+            USE_VERSION="8.5.0alpha2"
+          fi
           echo "name=$USE_VERSION" >> "$GITHUB_OUTPUT"
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
