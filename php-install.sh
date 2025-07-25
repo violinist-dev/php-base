@@ -1,23 +1,7 @@
 set -eu
 
 apk add --no-cache unixodbc-dev gmp-dev yaml-dev samba-dev libldap openldap-dev pcre-dev libxslt-dev imap-dev sudo git libpng libjpeg libpq libxml2 mysql-client openssh-client rsync patch bash imagemagick libzip-dev \
-    imagemagick-libs gettext gettext-dev imagemagick-dev librdkafka-dev autoconf g++ make icu-dev libpng-dev libjpeg-turbo-dev postgresql-dev libxml2-dev bzip2-dev icu icu-dev libmemcached-dev linux-headers $PHPIZE_DEPS
-
-case $PHP_VERSION in
-  8.4*|8.3|8.2|8.1) 
-    apk add --no-cache mpdecimal-dev
-    ;;
-  *)     
-    wget https://www.bytereef.org/software/mpdecimal/releases/mpdecimal-2.5.1.tar.gz
-    tar -xvzf mpdecimal-2.5.1.tar.gz
-    cd mpdecimal-2.5.1
-    ./configure --disable-cxx
-    make
-    make install
-    cd ..
-    rm -rf mpdecimal-2.5.1*
-    ;;
-esac
+    imagemagick-libs mpdecimal-dev gettext gettext-dev imagemagick-dev librdkafka-dev autoconf g++ make icu-dev libpng-dev libjpeg-turbo-dev postgresql-dev libxml2-dev bzip2-dev icu icu-dev libmemcached-dev linux-headers $PHPIZE_DEPS
 
 pecl channel-update pecl.php.net
 
