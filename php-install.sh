@@ -41,22 +41,6 @@ case $PHP_VERSION in
 esac
 
 case $PHP_VERSION in
-  8.4*)
-    echo "Installing mailparse from source"
-    git clone https://github.com/php/pecl-mail-mailparse
-    cd pecl-mail-mailparse
-    phpize
-    ./configure
-    make
-    make install
-    cd -
-    ;;
-  *)
-    yes | pecl install mailparse
-    ;;
-esac
-
-case $PHP_VERSION in
   8.5*)
     echo "Skipping memcached for PHP $PHP_VERSION"
     ;;
