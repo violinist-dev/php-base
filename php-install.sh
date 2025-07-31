@@ -29,7 +29,17 @@ case $PHP_VERSION in
     ;;
 esac
 
-yes | pecl install swoole apcu igbinary rdkafka yaml decimal uuid msgpack mailparse
+case $PHP_VERSION in
+  8.5*)
+    echo "Skipping swoole for PHP $PHP_VERSION"
+    ;;
+  *)
+    yes | pecl install swoole 
+    docker-php-ext-enable swoole
+    ;;
+esac
+
+yes | pecl install apcu igbinary rdkafka yaml decimal uuid msgpack mailparse
 
 case $PHP_VERSION in
   8.5*)
