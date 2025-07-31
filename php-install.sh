@@ -29,7 +29,16 @@ case $PHP_VERSION in
     ;;
 esac
 
-yes | pecl install ds apcu igbinary rdkafka yaml decimal uuid msgpack mailparse
+case $PHP_VERSION in
+  7.3*)
+    yes | pecl install ds
+    ;;
+  *)
+    yes | pecl install ds-1.4.0
+    ;;
+esac
+
+yes | pecl install apcu igbinary rdkafka yaml decimal uuid msgpack mailparse
 
 case $PHP_VERSION in
   8.5*)
