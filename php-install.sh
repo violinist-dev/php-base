@@ -30,7 +30,7 @@ case $PHP_VERSION in
 esac
 
 case $PHP_VERSION in
-  7.*|8.0*)
+  7.*|8.0*|8.5*)
     echo "Skipping swoole for PHP $PHP_VERSION"
     ;;
   *)
