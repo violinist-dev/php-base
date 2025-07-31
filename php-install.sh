@@ -74,6 +74,7 @@ case $PHP_VERSION in
     ;;
   *)
     yes | pecl install redis-3.1.1
+    docker-php-ext-enable redis
     ;;
 esac
 
@@ -141,7 +142,7 @@ case $PHP_VERSION in
     ;;
 esac
 
-docker-php-ext-install gmp ldap xsl mysqli gd pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl
+docker-php-ext-install gmp ldap xsl mysqli calendar gd pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl
 docker-php-ext-enable rdkafka apcu
 
 mkdir ~/.ssh/
