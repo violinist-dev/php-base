@@ -34,7 +34,7 @@ case $PHP_VERSION in
     echo "Skipping swoole for PHP $PHP_VERSION"
     ;;
   *)
-    yes | pecl install swoole 
+    echo "" | pecl install swoole 
     docker-php-ext-enable swoole
     ;;
 esac
