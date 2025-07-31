@@ -29,6 +29,15 @@ case $PHP_VERSION in
     ;;
 esac
 
+case $PHP_VERSION in
+  7.3*)
+    yes | pecl install ds-1.4.0
+    ;;
+  *)
+    yes | pecl install ds
+    ;;
+esac
+
 yes | pecl install apcu igbinary rdkafka yaml decimal uuid msgpack mailparse
 
 case $PHP_VERSION in
@@ -69,11 +78,11 @@ case $PHP_VERSION in
 esac
 
 case $PHP_VERSION in
-  8.*) 
+  8.*)
     mkdir -p /usr/src/php/ext/redis && curl -fsSL https://pecl.php.net/get/redis | tar xvz -C "/usr/src/php/ext/redis" --strip 1 && docker-php-ext-install redis
     docker-php-ext-enable redis
     ;;
-  *)     
+  *)
     yes | pecl install redis-3.1.1
     docker-php-ext-enable redis
     ;;
@@ -82,7 +91,7 @@ esac
 docker-php-ext-configure intl
 docker-php-ext-configure gettext
 docker-php-ext-install intl gettext sockets
-docker-php-ext-enable intl yaml decimal uuid mailparse msgpack sockets
+docker-php-ext-enable intl ds yaml decimal uuid mailparse msgpack sockets
 
 case $PHP_VERSION in
   8.5*)
@@ -96,35 +105,35 @@ esac
 
 # ftp is compiled into PHP in < 8.2.
 case $PHP_VERSION in
-  8.4*|8.3|8.2) 
+  8.4*|8.3|8.2)
     docker-php-ext-install ftp
     docker-php-ext-enable ftp
     ;;
-  *)     
+  *)
     echo "ftp extension already present on $PHP_VERSION"
     ;;
 esac
 
 # gd has slightly different build arguments on newer PHP.
 case $PHP_VERSION in
-  7.4|8.*) 
+  7.4|8.*)
     apk add --no-cache oniguruma-dev
     docker-php-ext-configure gd --with-jpeg=/usr
     ;;
-  *)     
+  *)
     docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr
     ;;
 esac
 
 case $PHP_VERSION in
-  8.0) 
+  8.0)
     pecl install xmlrpc-1.0.0RC2
     docker-php-ext-enable xmlrpc
     ;;
   8.*|8.4*)
     echo "skipping xmlrpc on PHP version $PHP_VERSION"
     ;;
-  *)     
+  *)
     docker-php-ext-install xmlrpc
     docker-php-ext-enable xmlrpc
     ;;

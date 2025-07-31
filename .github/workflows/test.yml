@@ -12,7 +12,7 @@ on:
 jobs:
   test:
     name: Run tests
-    runs-on: ubuntu-latest 
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         php-version:
@@ -45,7 +45,7 @@ jobs:
         env:
           PHP_VERSION: '8.5.0alpha2'
 
-      - name: Output modules 
+      - name: Output modules
         run: docker run php-base php -m
 
       - name: Check for PHP warnings or notices
