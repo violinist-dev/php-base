@@ -31,10 +31,10 @@ esac
 
 case $PHP_VERSION in
   7.3*)
-    yes | pecl install ds
+    yes | pecl install ds-1.4.0
     ;;
   *)
-    yes | pecl install ds-1.4.0
+    yes | pecl install ds
     ;;
 esac
 
