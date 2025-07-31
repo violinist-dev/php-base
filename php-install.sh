@@ -82,7 +82,7 @@ esac
 docker-php-ext-configure intl
 docker-php-ext-configure gettext
 docker-php-ext-install intl gettext sockets
-docker-php-ext-enable intl ds yaml decimal uuid mailparse msgpack sockets
+docker-php-ext-enable intl yaml decimal uuid mailparse msgpack sockets
 
 case $PHP_VERSION in
   8.5*)
