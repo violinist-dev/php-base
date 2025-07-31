@@ -38,6 +38,7 @@
     "ext-soap": "*",
     "ext-sqlite3": "*",
     "ext-sqlsrv": "*",
+    "ext-swoole": "*",
     "ext-uuid": "*",
     "ext-xml": "*",
     "ext-xsl": "*",
