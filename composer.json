@@ -10,6 +10,7 @@
     "ext-date": "*",
     "ext-decimal": "*",
     "ext-dom": "*",
+    "ext-ds": "*",
     "ext-exif": "*",
     "ext-fileinfo": "*",
     "ext-filter": "*",
