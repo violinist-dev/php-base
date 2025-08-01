@@ -37,6 +37,7 @@
     "ext-pdo_sqlsrv": "*",
     "ext-redis": "*",
     "ext-soap": "*",
+    "ext-sockets": "*",
     "ext-sqlite3": "*",
     "ext-sqlsrv": "*",
     "ext-swoole": "*",

@@ -98,7 +98,6 @@ esac
 case $PHP_VERSION in
   8.*)
     mkdir -p /usr/src/php/ext/redis && curl -fsSL https://pecl.php.net/get/redis | tar xvz -C "/usr/src/php/ext/redis" --strip 1 && docker-php-ext-install redis
-    docker-php-ext-enable redis
     ;;
   *)
     yes | pecl install redis-3.1.1
@@ -109,7 +108,7 @@ esac
 docker-php-ext-configure intl
 docker-php-ext-configure gettext
 docker-php-ext-install intl gettext sockets
-docker-php-ext-enable intl ds yaml decimal uuid mailparse msgpack sockets
+docker-php-ext-enable ds yaml decimal uuid mailparse msgpack
 
 case $PHP_VERSION in
   8.5*)
@@ -125,7 +124,6 @@ esac
 case $PHP_VERSION in
   8.4*|8.3|8.2)
     docker-php-ext-install ftp
-    docker-php-ext-enable ftp
     ;;
   *)
     echo "ftp extension already present on $PHP_VERSION"
@@ -171,8 +169,8 @@ case $PHP_VERSION in
     ;;
 esac
 
-docker-php-ext-install gmp ldap xsl mysqli xml calendar gd mbstring pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl
-docker-php-ext-enable ldap rdkafka calendar apcu exif gd
+docker-php-ext-install gmp ldap xsl mysqli calendar gd pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl
+docker-php-ext-enable rdkafka apcu
 
 mkdir ~/.ssh/
 ssh-keyscan -t rsa git.drupal.org >> ~/.ssh/known_hosts
