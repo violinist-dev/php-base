@@ -59,12 +59,13 @@ esac
 
 case $PHP_VERSION in
   8.5*)
-    git clone --depth=1 https://github.com/igbinary/igbinary.git /usr/src/igbinary; \
-      cd /usr/src/igbinary; \
-      phpize && ./configure && make -j"$(nproc)" && make install; \
-      echo "extension=igbinary.so" > /usr/local/etc/php/conf.d/igbinary.ini; \
-      cd -; \
-      rm -rf /usr/src/igbinary
+    php -m | grep -q '^igbinary$' || \
+      (git clone --depth=1 https://github.com/igbinary/igbinary.git /usr/src/igbinary; \
+        cd /usr/src/igbinary; \
+        phpize && ./configure && make -j"$(nproc)" && make install; \
+        echo "extension=igbinary.so" > /usr/local/etc/php/conf.d/igbinary.ini; \
+        cd -; \
+        rm -rf /usr/src/igbinary)
     ;;
   *)
     yes | pecl install igbinary
@@ -73,14 +74,16 @@ esac
 
 case $PHP_VERSION in
   8.5*)
-      git clone --depth=1 https://github.com/php/pecl-mail-mailparse.git /usr/src/mailparse; \
-      cd /usr/src/mailparse; \
-      phpize && ./configure && make -j"$(nproc)" && make install; \
-      echo "extension=mailparse.so" > /usr/local/etc/php/conf.d/mailparse.ini; \
-      # mailparse needs mbstring loaded first:
-      echo "extension=mbstring" > /usr/local/etc/php/conf.d/00-mbstring.ini; \
-      cd -; \
-      rm -rf /usr/src/mailparse; \
+      # Yknow if we really need it.
+      php -m | grep -q '^mailparse$' || \
+        (git clone --depth=1 https://github.com/php/pecl-mail-mailparse.git /usr/src/mailparse; \
+        cd /usr/src/mailparse; \
+        phpize && ./configure && make -j"$(nproc)" && make install; \
+        echo "extension=mailparse.so" > /usr/local/etc/php/conf.d/mailparse.ini; \
+        # mailparse needs mbstring loaded first:
+        echo "extension=mbstring" > /usr/local/etc/php/conf.d/00-mbstring.ini; \
+        cd -; \
+        rm -rf /usr/src/mailparse)
     ;;
   *)
     yes | pecl install mailparse
@@ -128,12 +131,13 @@ esac
 
 case $PHP_VERSION in
   8.5*)
-    git clone --depth=1 https://github.com/phpredis/phpredis.git /usr/src/phpredis; \
-      cd /usr/src/phpredis; \
-      phpize && ./configure && make -j"$(nproc)" && make install; \
-      echo "extension=redis.so" > /usr/local/etc/php/conf.d/redis.ini; \
-      cd -; \
-      rm -rf /usr/src/phpredis
+    php -m | grep -q '^redis$' || \
+      (git clone --depth=1 https://github.com/phpredis/phpredis.git /usr/src/phpredis; \
+        cd /usr/src/phpredis; \
+        phpize && ./configure && make -j"$(nproc)" && make install; \
+        echo "extension=redis.so" > /usr/local/etc/php/conf.d/redis.ini; \
+        cd -; \
+        rm -rf /usr/src/phpredis)
     ;;
   8.*)
     mkdir -p /usr/src/php/ext/redis && curl -fsSL https://pecl.php.net/get/redis | tar xvz -C "/usr/src/php/ext/redis" --strip 1 && docker-php-ext-install redis
@@ -196,13 +200,14 @@ esac
 
 case $PHP_VERSION in
   8.5*)
-    git clone --depth=1 https://github.com/Imagick/imagick.git /usr/src/imagick; \
-      cd /usr/src/imagick; \
-      phpize && ./configure && make -j"$(nproc)" && make install; \
-      echo "extension=imagick.so" > /usr/local/etc/php/conf.d/imagick.ini; \
-      cd -; \
-      rm -rf /usr/src/imagick
-    ;;
+    php -m | grep -q '^imagick$' || \
+      git clone --depth=1 https://github.com/Imagick/imagick.git /usr/src/imagick; \
+        cd /usr/src/imagick; \
+        phpize && ./configure && make -j"$(nproc)" && make install; \
+        echo "extension=imagick.so" > /usr/local/etc/php/conf.d/imagick.ini; \
+        cd -; \
+        rm -rf /usr/src/imagick
+      ;;
   *)
     yes | pecl install imagick
     ;;
@@ -213,7 +218,8 @@ docker-php-ext-enable imagick
 case $PHP_VERSION in
   8.4*|8.5*)
     apk add --no-cache krb5-dev
-    yes | pecl install imap
+    # If we really need it.
+    php -m | grep -q '^imap$' || yes | pecl install imap
     docker-php-ext-enable imap
     ;;
   *)
