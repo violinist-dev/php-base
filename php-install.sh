@@ -109,6 +109,13 @@ case $PHP_VERSION in
 esac
 
 case $PHP_VERSION in
+  8.5*)
+    git clone --depth=1 https://github.com/phpredis/phpredis.git /usr/src/phpredis; \
+      cd /usr/src/phpredis; \
+      phpize && ./configure && make -j"$(nproc)" && make install; \
+      echo "extension=redis.so" > /usr/local/etc/php/conf.d/redis.ini; \
+      rm -rf /usr/src/phpredis
+    ;;
   8.*)
     mkdir -p /usr/src/php/ext/redis && curl -fsSL https://pecl.php.net/get/redis | tar xvz -C "/usr/src/php/ext/redis" --strip 1 && docker-php-ext-install redis
     ;;
