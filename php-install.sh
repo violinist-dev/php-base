@@ -80,8 +80,6 @@ case $PHP_VERSION in
         cd /usr/src/mailparse; \
         phpize && ./configure && make -j"$(nproc)" && make install; \
         echo "extension=mailparse.so" > /usr/local/etc/php/conf.d/mailparse.ini; \
-        # mailparse needs mbstring loaded first:
-        echo "extension=mbstring" > /usr/local/etc/php/conf.d/00-mbstring.ini; \
         cd -; \
         rm -rf /usr/src/mailparse)
     ;;
@@ -201,12 +199,12 @@ esac
 case $PHP_VERSION in
   8.5*)
     php -m | grep -q '^imagick$' || \
-      git clone --depth=1 https://github.com/Imagick/imagick.git /usr/src/imagick; \
+      (git clone --depth=1 https://github.com/Imagick/imagick.git /usr/src/imagick; \
         cd /usr/src/imagick; \
         phpize && ./configure && make -j"$(nproc)" && make install; \
         echo "extension=imagick.so" > /usr/local/etc/php/conf.d/imagick.ini; \
         cd -; \
-        rm -rf /usr/src/imagick
+        rm -rf /usr/src/imagick)
       ;;
   *)
     yes | pecl install imagick
@@ -250,22 +248,22 @@ git clone https://github.com/violinist-dev/drupal-contrib-sa /root/drupal-contri
 
 machine=`uname -m 2>/dev/null || /usr/bin/uname -m`
 case ${machine} in
-    arm|armv7*)
-        machine="arm"
-        ;;
-    aarch64*|armv8*)
-        machine="arm64"
-        ;;
-    i386)
-        machine="386"
-        ;;
-    x86_64)
-        machine="amd64"
-        ;;
-    *)
-        output "  [ ] You architecture (${machine}) is not currently supported" "error"
-        exit 1
-        ;;
+  arm|armv7*)
+    machine="arm"
+    ;;
+  aarch64*|armv8*)
+    machine="arm64"
+    ;;
+  i386)
+    machine="386"
+    ;;
+  x86_64)
+    machine="amd64"
+    ;;
+  *)
+    output "  [ ] You architecture (${machine}) is not currently supported" "error"
+    exit 1
+    ;;
 esac
 
 wget https://github.com/symfony/cli/releases/download/v4.16.3/symfony_linux_${machine}.gz -O /tmp/symfony.gz
