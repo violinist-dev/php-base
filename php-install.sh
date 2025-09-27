@@ -56,7 +56,20 @@ case $PHP_VERSION in
     ;;
 esac
 
-yes | pecl install apcu igbinary rdkafka yaml decimal uuid msgpack mailparse
+case $PHP_VERSION in
+  8.5*)
+    git clone --depth=1 https://github.com/igbinary/igbinary.git /usr/src/igbinary; \
+      cd /usr/src/igbinary; \
+      phpize && ./configure && make -j"$(nproc)" && make install; \
+      echo "extension=igbinary.so" > /usr/local/etc/php/conf.d/igbinary.ini; \
+      rm -rf /usr/src/igbinary
+    ;;
+  *)
+    yes | pecl install igbinary
+    ;;
+esac
+
+yes | pecl install apcu rdkafka yaml decimal uuid msgpack mailparse
 
 case $PHP_VERSION in
   8.5*)
