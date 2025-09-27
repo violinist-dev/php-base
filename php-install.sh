@@ -192,7 +192,20 @@ case $PHP_VERSION in
     ;;
 esac
 
-yes | pecl install imagick
+case $PHP_VERSION in
+  8.5*)
+    git clone --depth=1 https://github.com/Imagick/imagick.git /usr/src/imagick; \
+      cd /usr/src/imagick; \
+      phpize && ./configure && make -j"$(nproc)" && make install; \
+      echo "extension=imagick.so" > /usr/local/etc/php/conf.d/imagick.ini; \
+      cd -; \
+      rm -rf /usr/src/imagick
+    ;;
+  *)
+    yes | pecl install imagick
+    ;;
+esac
+
 docker-php-ext-enable imagick
 
 case $PHP_VERSION in
