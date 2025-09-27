@@ -148,8 +148,8 @@ case $PHP_VERSION in
     ;;
 esac
 
-docker-php-ext-configure intl
-docker-php-ext-configure gettext
+php -m | grep -q '^intl$' || docker-php-ext-configure intl
+php -m | grep -q '^gettext$' || docker-php-ext-configure gettext
 docker-php-ext-install intl gettext sockets
 docker-php-ext-enable ds yaml decimal uuid mailparse msgpack
 
