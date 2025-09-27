@@ -52,7 +52,8 @@ case $PHP_VERSION in
     yes | pecl install ds-1.4.0
     ;;
   *)
-    yes | pecl install ds
+    # If we really need it.
+    php -m | grep -q '^ds$' || yes | pecl install ds
     ;;
 esac
 
