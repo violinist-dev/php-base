@@ -69,7 +69,22 @@ case $PHP_VERSION in
     ;;
 esac
 
-yes | pecl install apcu rdkafka yaml decimal uuid msgpack mailparse
+case $PHP_VERSION in
+  8.5*)
+      git clone --depth=1 https://github.com/php/pecl-mail-mailparse.git /usr/src/mailparse; \
+      cd /usr/src/mailparse; \
+      phpize && ./configure && make -j"$(nproc)" && make install; \
+      echo "extension=mailparse.so" > /usr/local/etc/php/conf.d/mailparse.ini; \
+      # mailparse needs mbstring loaded first:
+      echo "extension=mbstring" > /usr/local/etc/php/conf.d/00-mbstring.ini; \
+      rm -rf /usr/src/mailparse; \
+    ;;
+  *)
+    yes | pecl install mailparse
+    ;;
+esac
+
+yes | pecl install apcu rdkafka yaml decimal uuid msgpack
 
 case $PHP_VERSION in
   8.5*)
