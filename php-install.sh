@@ -132,6 +132,7 @@ case $PHP_VERSION in
       cd /usr/src/phpredis; \
       phpize && ./configure && make -j"$(nproc)" && make install; \
       echo "extension=redis.so" > /usr/local/etc/php/conf.d/redis.ini; \
+      cd -; \
       rm -rf /usr/src/phpredis
     ;;
   8.*)
