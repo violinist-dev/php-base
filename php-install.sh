@@ -62,6 +62,7 @@ case $PHP_VERSION in
       cd /usr/src/igbinary; \
       phpize && ./configure && make -j"$(nproc)" && make install; \
       echo "extension=igbinary.so" > /usr/local/etc/php/conf.d/igbinary.ini; \
+      cd -; \
       rm -rf /usr/src/igbinary
     ;;
   *)
@@ -77,6 +78,7 @@ case $PHP_VERSION in
       echo "extension=mailparse.so" > /usr/local/etc/php/conf.d/mailparse.ini; \
       # mailparse needs mbstring loaded first:
       echo "extension=mbstring" > /usr/local/etc/php/conf.d/00-mbstring.ini; \
+      cd -; \
       rm -rf /usr/src/mailparse; \
     ;;
   *)
