@@ -148,7 +148,9 @@ esac
 
 php -m | grep -q '^intl$' || docker-php-ext-configure intl
 php -m | grep -q '^gettext$' || docker-php-ext-configure gettext
-docker-php-ext-install intl gettext sockets
+php -m | grep -q '^intl$' || docker-php-ext-install intl
+php -m | grep -q '^gettext$' || docker-php-ext-install gettext
+php -m | grep -q '^sockets$' || docker-php-ext-install sockets
 docker-php-ext-enable ds yaml decimal uuid mailparse msgpack
 
 case $PHP_VERSION in
