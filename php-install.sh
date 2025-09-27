@@ -221,7 +221,16 @@ case $PHP_VERSION in
     ;;
 esac
 
-docker-php-ext-install gmp ldap xsl mysqli calendar gd pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl
+case $PHP_VERSION in
+  8.5*)
+    echo "Skipping opcache for PHP $PHP_VERSION"
+    ;;
+  *)
+    docker-php-ext-install opcache
+    ;;
+esac
+
+docker-php-ext-install gmp ldap xsl mysqli calendar gd pdo_mysql pdo_pgsql zip bcmath soap exif bz2 pcntl
 docker-php-ext-enable rdkafka apcu
 
 mkdir ~/.ssh/
