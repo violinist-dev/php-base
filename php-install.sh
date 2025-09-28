@@ -52,11 +52,43 @@ case $PHP_VERSION in
     yes | pecl install ds-1.4.0
     ;;
   *)
-    yes | pecl install ds
+    # If we really need it.
+    php -m | grep -q '^ds$' || yes | pecl install ds
     ;;
 esac
 
-yes | pecl install apcu igbinary rdkafka yaml decimal uuid msgpack mailparse
+case $PHP_VERSION in
+  8.5*)
+    php -m | grep -q '^igbinary$' || \
+      (git clone --depth=1 https://github.com/igbinary/igbinary.git /usr/src/igbinary; \
+        cd /usr/src/igbinary; \
+        phpize && ./configure && make -j"$(nproc)" && make install; \
+        echo "extension=igbinary.so" > /usr/local/etc/php/conf.d/igbinary.ini; \
+        cd -; \
+        rm -rf /usr/src/igbinary)
+    ;;
+  *)
+    yes | pecl install igbinary
+    ;;
+esac
+
+case $PHP_VERSION in
+  8.5*)
+      # Yknow if we really need it.
+      php -m | grep -q '^mailparse$' || \
+        (git clone --depth=1 https://github.com/php/pecl-mail-mailparse.git /usr/src/mailparse; \
+        cd /usr/src/mailparse; \
+        phpize && ./configure && make -j"$(nproc)" && make install; \
+        echo "extension=mailparse.so" > /usr/local/etc/php/conf.d/mailparse.ini; \
+        cd -; \
+        rm -rf /usr/src/mailparse)
+    ;;
+  *)
+    yes | pecl install mailparse
+    ;;
+esac
+
+yes | pecl install apcu rdkafka yaml decimal uuid msgpack
 
 case $PHP_VERSION in
   8.5*)
@@ -96,6 +128,15 @@ case $PHP_VERSION in
 esac
 
 case $PHP_VERSION in
+  8.5*)
+    php -m | grep -q '^redis$' || \
+      (git clone --depth=1 https://github.com/phpredis/phpredis.git /usr/src/phpredis; \
+        cd /usr/src/phpredis; \
+        phpize && ./configure && make -j"$(nproc)" && make install; \
+        echo "extension=redis.so" > /usr/local/etc/php/conf.d/redis.ini; \
+        cd -; \
+        rm -rf /usr/src/phpredis)
+    ;;
   8.*)
     mkdir -p /usr/src/php/ext/redis && curl -fsSL https://pecl.php.net/get/redis | tar xvz -C "/usr/src/php/ext/redis" --strip 1 && docker-php-ext-install redis
     ;;
@@ -105,9 +146,11 @@ case $PHP_VERSION in
     ;;
 esac
 
-docker-php-ext-configure intl
-docker-php-ext-configure gettext
-docker-php-ext-install intl gettext sockets
+php -m | grep -q '^intl$' || docker-php-ext-configure intl
+php -m | grep -q '^gettext$' || docker-php-ext-configure gettext
+php -m | grep -q '^intl$' || docker-php-ext-install intl
+php -m | grep -q '^gettext$' || docker-php-ext-install gettext
+php -m | grep -q '^sockets$' || docker-php-ext-install sockets
 docker-php-ext-enable ds yaml decimal uuid mailparse msgpack
 
 case $PHP_VERSION in
@@ -155,13 +198,28 @@ case $PHP_VERSION in
     ;;
 esac
 
-yes | pecl install imagick
+case $PHP_VERSION in
+  8.5*)
+    php -m | grep -q '^imagick$' || \
+      (git clone --depth=1 https://github.com/Imagick/imagick.git /usr/src/imagick; \
+        cd /usr/src/imagick; \
+        phpize && ./configure && make -j"$(nproc)" && make install; \
+        echo "extension=imagick.so" > /usr/local/etc/php/conf.d/imagick.ini; \
+        cd -; \
+        rm -rf /usr/src/imagick)
+      ;;
+  *)
+    yes | pecl install imagick
+    ;;
+esac
+
 docker-php-ext-enable imagick
 
 case $PHP_VERSION in
   8.4*|8.5*)
     apk add --no-cache krb5-dev
-    yes | pecl install imap
+    # If we really need it.
+    php -m | grep -q '^imap$' || yes | pecl install imap
     docker-php-ext-enable imap
     ;;
   *)
@@ -169,7 +227,16 @@ case $PHP_VERSION in
     ;;
 esac
 
-docker-php-ext-install gmp ldap xsl mysqli calendar gd pdo_mysql pdo_pgsql zip opcache bcmath soap exif bz2 pcntl
+case $PHP_VERSION in
+  8.5*)
+    echo "Skipping opcache for PHP $PHP_VERSION"
+    ;;
+  *)
+    docker-php-ext-install opcache
+    ;;
+esac
+
+docker-php-ext-install gmp ldap xsl mysqli calendar gd pdo_mysql pdo_pgsql zip bcmath soap exif bz2 pcntl
 docker-php-ext-enable rdkafka apcu
 
 mkdir ~/.ssh/
@@ -183,22 +250,22 @@ git clone https://github.com/violinist-dev/drupal-contrib-sa /root/drupal-contri
 
 machine=`uname -m 2>/dev/null || /usr/bin/uname -m`
 case ${machine} in
-    arm|armv7*)
-        machine="arm"
-        ;;
-    aarch64*|armv8*)
-        machine="arm64"
-        ;;
-    i386)
-        machine="386"
-        ;;
-    x86_64)
-        machine="amd64"
-        ;;
-    *)
-        output "  [ ] You architecture (${machine}) is not currently supported" "error"
-        exit 1
-        ;;
+  arm|armv7*)
+    machine="arm"
+    ;;
+  aarch64*|armv8*)
+    machine="arm64"
+    ;;
+  i386)
+    machine="386"
+    ;;
+  x86_64)
+    machine="amd64"
+    ;;
+  *)
+    output "  [ ] You architecture (${machine}) is not currently supported" "error"
+    exit 1
+    ;;
 esac
 
 wget https://github.com/symfony/cli/releases/download/v4.16.3/symfony_linux_${machine}.gz -O /tmp/symfony.gz
