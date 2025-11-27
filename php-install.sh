@@ -199,7 +199,7 @@ case $PHP_VERSION in
 esac
 
 case $PHP_VERSION in
-  8.5*)
+  8.6*)
     php -m | grep -q '^imagick$' || \
       (git clone --depth=1 https://github.com/Imagick/imagick.git /usr/src/imagick; \
         cd /usr/src/imagick; \
