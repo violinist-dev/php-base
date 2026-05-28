@@ -1,7 +1,7 @@
 set -eu
 
 apk add --no-cache unixodbc-dev brotli-dev gmp-dev yaml-dev samba-dev libldap openldap-dev pcre-dev libxslt-dev imap-dev sudo git libpng libjpeg libpq libxml2 mysql-client openssh-client rsync patch bash imagemagick libzip-dev \
-    imagemagick-libs unixodbc-dev mpdecimal-dev gettext gettext-dev imagemagick-dev librdkafka-dev autoconf g++ make icu-dev libpng-dev libjpeg-turbo-dev postgresql-dev libxml2-dev bzip2-dev icu icu-dev libmemcached-dev linux-headers $PHPIZE_DEPS
+    imagemagick-libs unixodbc-dev rabbitmq-c rabbitmq-c-dev mpdecimal-dev gettext gettext-dev imagemagick-dev librdkafka-dev autoconf g++ make icu-dev libpng-dev libjpeg-turbo-dev postgresql-dev libxml2-dev bzip2-dev icu icu-dev libmemcached-dev linux-headers $PHPIZE_DEPS
 
 pecl channel-update pecl.php.net
 
@@ -38,6 +38,10 @@ case $PHP_VERSION in
     echo "" | pecl install swoole-4.8.13
     docker-php-ext-enable swoole
     ;;
+  8.1*)
+    echo "" | pecl install swoole-6.1.8
+    docker-php-ext-enable swoole
+    ;;
   8.5*)
     echo "Skipping swoole for PHP $PHP_VERSION"
     ;;
@@ -48,8 +52,11 @@ case $PHP_VERSION in
 esac
 
 case $PHP_VERSION in
-  7.3*)
+  7.3)
     yes | pecl install ds-1.4.0
+    ;;
+  7.4|8.0|8.1)
+    yes | pecl install ds-1.6.0
     ;;
   *)
     # If we really need it.
@@ -88,7 +95,28 @@ case $PHP_VERSION in
     ;;
 esac
 
-yes | pecl install apcu rdkafka yaml decimal uuid msgpack
+yes | pecl install apcu rdkafka yaml uuid msgpack
+
+case $PHP_VERSION in
+  7.3)
+    yes | pecl install decimal-1.5.1
+    ;;
+  7.4|8.0|8.1)
+    yes | pecl install decimal-1.5.3
+    ;;
+  *)
+    yes | pecl install decimal
+    ;;
+esac
+
+case $PHP_VERSION in
+  7.3)
+    echo "" | pecl install amqp-1.11.0
+    ;;
+  *)
+    echo "" | pecl install amqp
+    ;;
+esac
 
 case $PHP_VERSION in
   8.5*)
@@ -118,6 +146,9 @@ case $PHP_VERSION in
     ;;
   8.0)
     yes | pecl install sqlsrv-5.11.1 pdo_sqlsrv-5.11.1
+    ;;
+  8.1|8.2)
+    yes | pecl install sqlsrv-5.12.0 pdo_sqlsrv-5.12.0
     ;;
   8.5*)
     echo "Skipping sqlsrv on $PHP_VERSION"
@@ -151,7 +182,7 @@ php -m | grep -q '^gettext$' || docker-php-ext-configure gettext
 php -m | grep -q '^intl$' || docker-php-ext-install intl
 php -m | grep -q '^gettext$' || docker-php-ext-install gettext
 php -m | grep -q '^sockets$' || docker-php-ext-install sockets
-docker-php-ext-enable ds yaml decimal uuid mailparse msgpack
+docker-php-ext-enable ds yaml decimal uuid mailparse msgpack amqp
 
 case $PHP_VERSION in
   8.5*)
