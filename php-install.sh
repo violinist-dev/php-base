@@ -1,7 +1,7 @@
 set -eu
 
 apk add --no-cache unixodbc-dev brotli-dev gmp-dev yaml-dev samba-dev libldap openldap-dev pcre-dev libxslt-dev imap-dev sudo git libpng libjpeg libpq libxml2 mysql-client openssh-client rsync patch bash imagemagick libzip-dev \
-    imagemagick-libs unixodbc-dev mpdecimal-dev gettext gettext-dev imagemagick-dev librdkafka-dev autoconf g++ make icu-dev libpng-dev libjpeg-turbo-dev postgresql-dev libxml2-dev bzip2-dev icu icu-dev libmemcached-dev linux-headers $PHPIZE_DEPS
+    imagemagick-libs unixodbc-dev rabbitmq-c rabbitmq-c-dev mpdecimal-dev gettext gettext-dev imagemagick-dev librdkafka-dev autoconf g++ make icu-dev libpng-dev libjpeg-turbo-dev postgresql-dev libxml2-dev bzip2-dev icu icu-dev libmemcached-dev linux-headers $PHPIZE_DEPS
 
 pecl channel-update pecl.php.net
 
@@ -88,7 +88,7 @@ case $PHP_VERSION in
     ;;
 esac
 
-yes | pecl install apcu rdkafka yaml decimal uuid msgpack
+yes | pecl install apcu rdkafka yaml decimal uuid msgpack amqp
 
 case $PHP_VERSION in
   8.5*)
@@ -151,7 +151,7 @@ php -m | grep -q '^gettext$' || docker-php-ext-configure gettext
 php -m | grep -q '^intl$' || docker-php-ext-install intl
 php -m | grep -q '^gettext$' || docker-php-ext-install gettext
 php -m | grep -q '^sockets$' || docker-php-ext-install sockets
-docker-php-ext-enable ds yaml decimal uuid mailparse msgpack
+docker-php-ext-enable ds yaml decimal uuid mailparse msgpack amqp
 
 case $PHP_VERSION in
   8.5*)
