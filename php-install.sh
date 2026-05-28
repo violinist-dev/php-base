@@ -57,6 +57,7 @@ case $PHP_VERSION in
     ;;
   7.4*)
     yes | pecl install ds-1.6.0
+    ;;
   *)
     # If we really need it.
     php -m | grep -q '^ds$' || yes | pecl install ds
