@@ -96,7 +96,15 @@ case $PHP_VERSION in
 esac
 
 yes | pecl install apcu rdkafka yaml decimal uuid msgpack
-echo "" | pecl install amqp
+
+case $PHP_VERSION in
+  7.3)
+    echo "" | pecl install amqp-2.1.0
+    ;;
+  *)
+    echo "" | pecl install amqp
+    ;;
+esac
 
 case $PHP_VERSION in
   8.5*)
