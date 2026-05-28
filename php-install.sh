@@ -95,7 +95,19 @@ case $PHP_VERSION in
     ;;
 esac
 
-yes | pecl install apcu rdkafka yaml decimal uuid msgpack
+yes | pecl install apcu rdkafka yaml uuid msgpack
+
+case $PHP_VERSION in
+  7.3)
+    yes | pecl install decimal-1.5.1
+    ;;
+  7.4|8.0|8.1)
+    yes | pecl install decimal-1.5.3
+    ;;
+  *)
+    yes | pecl install decimal
+    ;;
+esac
 
 case $PHP_VERSION in
   7.3)
