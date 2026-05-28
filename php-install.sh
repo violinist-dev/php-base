@@ -38,6 +38,10 @@ case $PHP_VERSION in
     echo "" | pecl install swoole-4.8.13
     docker-php-ext-enable swoole
     ;;
+  8.1*)
+    echo "" | pecl install swoole-6.1.8
+    docker-php-ext-enable swoole
+    ;;
   8.5*)
     echo "Skipping swoole for PHP $PHP_VERSION"
     ;;
