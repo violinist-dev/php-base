@@ -52,10 +52,10 @@ case $PHP_VERSION in
 esac
 
 case $PHP_VERSION in
-  7.3*)
+  7.3)
     yes | pecl install ds-1.4.0
     ;;
-  7.4*)
+  7.4|8.0|8.1)
     yes | pecl install ds-1.6.0
     ;;
   *)
