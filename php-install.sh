@@ -99,7 +99,7 @@ yes | pecl install apcu rdkafka yaml decimal uuid msgpack
 
 case $PHP_VERSION in
   7.3)
-    echo "" | pecl install amqp-2.1.0
+    echo "Skipping amqp extension for $PHP_VERSION"
     ;;
   *)
     echo "" | pecl install amqp
