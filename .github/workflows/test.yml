@@ -31,7 +31,7 @@ jobs:
         run: echo "$MATRIX_CONTEXT"
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v7
 
       - name: Build test image
         if: matrix.php-version != '8.6'
