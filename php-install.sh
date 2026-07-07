@@ -8,6 +8,10 @@ case $PHP_VERSION in
     echo "Installing pie in place of pecl (pecl is not available yet for this alpha release)"
     curl -fsSL -o /usr/local/bin/pie https://github.com/php/pie/releases/latest/download/pie.phar
     chmod +x /usr/local/bin/pie
+    # pie.phar's bundled Box requirements checker doesn't know about 8.6 yet
+    # and refuses to run under it (the only php available to run pie here
+    # *is* the 8.6 build in progress), so skip that check.
+    export BOX_REQUIREMENT_CHECKER=0
     ;;
   *)
     pecl channel-update pecl.php.net
