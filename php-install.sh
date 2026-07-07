@@ -17,13 +17,19 @@ case $PHP_VERSION in
     # $PHPIZE_DEPS, so make sure it's there before pie tries to build anything.
     apk add --no-cache libtool
     # PHP 8.6 dropped a handful of compatibility macros/functions extensions
-    # still rely on. XtOffsetOf (-> offsetof) broke ext-ds the same way it
-    # already broke igbinary/imagick; zval_dtor (-> zval_ptr_dtor_nogc, same
-    # rename already used for igbinary) broke rdkafka the same way it already
-    # broke igbinary; EMPTY_SWITCH_DEFAULT_CASE() (used to mark a switch's
-    # default case unreachable) broke apcu. Defining it away entirely just
-    # drops that defensive default case, which is harmless since the switches
-    # using it already enumerate every real case explicitly.
+    # still rely on, and reorganized headers so some macros that used to be
+    # transitively visible no longer are. XtOffsetOf (-> offsetof) broke
+    # ext-ds the same way it already broke igbinary/imagick; zval_dtor
+    # (-> zval_ptr_dtor_nogc, same rename already used for igbinary) broke
+    # rdkafka the same way it already broke igbinary; EMPTY_SWITCH_DEFAULT_CASE()
+    # (used to mark a switch's default case unreachable) broke apcu - defining
+    # it away entirely just drops that defensive default case, which is
+    # harmless since the switches using it already enumerate every real case
+    # explicitly; INI_INT (a convenience macro around zend_ini_long, its
+    # definition hasn't changed in years) broke ext-decimal because whatever
+    # header used to pull it in transitively no longer does - define it
+    # ourselves rather than -include the real php_ini.h out of order, since
+    # php_ini.h expects things from php.h to already be included first.
     #
     # EMPTY_SWITCH_DEFAULT_CASE() needs parentheses in its -D definition,
     # but CFLAGS gets read by two different mechanisms in the same build:
@@ -32,11 +38,15 @@ case $PHP_VERSION in
     # compiler sanity check expands $CFLAGS as a plain shell variable inside
     # eval (quoting does NOT survive - the literal quote characters reach
     # cc and break "checking whether the C compiler works"). A quoted -D
-    # value can't satisfy both, so put the macro in a real header instead
-    # and pull it in everywhere via -include, which is just a plain path.
+    # value can't satisfy both, so put macros needing special characters in
+    # a real header instead and pull it in everywhere via -include, which is
+    # just a plain path.
     cat > /root/php86-pie-compat.h <<'EOC'
 #ifndef EMPTY_SWITCH_DEFAULT_CASE
 #define EMPTY_SWITCH_DEFAULT_CASE()
+#endif
+#ifndef INI_INT
+#define INI_INT(name) ((zend_long) zend_ini_long((name), sizeof(name)-1, 0))
 #endif
 EOC
     # Apply all three shims for every extension built on 8.6 for the rest of
