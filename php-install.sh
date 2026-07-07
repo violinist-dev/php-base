@@ -5,7 +5,9 @@ apk add --no-cache unixodbc-dev brotli-dev gmp-dev yaml-dev samba-dev libldap op
 
 case $PHP_VERSION in
   8.6*)
-    echo "Skipping pecl channel-update on PHP $PHP_VERSION (pecl is not available yet for this alpha release)"
+    echo "Installing pie in place of pecl (pecl is not available yet for this alpha release)"
+    curl -fsSL -o /usr/local/bin/pie https://github.com/php/pie/releases/latest/download/pie.phar
+    chmod +x /usr/local/bin/pie
     ;;
   *)
     pecl channel-update pecl.php.net
@@ -66,7 +68,7 @@ case $PHP_VERSION in
     yes | pecl install ds-1.6.0
     ;;
   8.6*)
-    echo "Skipping ds for PHP $PHP_VERSION"
+    pie install --no-build-tools-check --no-system-dependencies-check php-ds/ext-ds
     ;;
   *)
     # If we really need it.
@@ -86,13 +88,8 @@ case $PHP_VERSION in
     ;;
   8.6*)
     php -m | grep -q '^igbinary$' || \
-      (git clone --depth=1 https://github.com/igbinary/igbinary.git /usr/src/igbinary; \
-        cd /usr/src/igbinary; \
-        export CFLAGS="${CFLAGS:-} -DXtOffsetOf=offsetof -Dzval_dtor=zval_ptr_dtor_nogc"; \
-        phpize && ./configure && make -j"$(nproc)" && make install; \
-        echo "extension=igbinary.so" > /usr/local/etc/php/conf.d/igbinary.ini; \
-        cd -; \
-        rm -rf /usr/src/igbinary)
+      (export CFLAGS="${CFLAGS:-} -DXtOffsetOf=offsetof -Dzval_dtor=zval_ptr_dtor_nogc"; \
+        pie install --no-build-tools-check --no-system-dependencies-check igbinary/igbinary)
     ;;
   *)
     yes | pecl install igbinary
@@ -100,7 +97,7 @@ case $PHP_VERSION in
 esac
 
 case $PHP_VERSION in
-  8.5*|8.6*)
+  8.5*)
       # Yknow if we really need it.
       php -m | grep -q '^mailparse$' || \
         (git clone --depth=1 https://github.com/php/pecl-mail-mailparse.git /usr/src/mailparse; \
@@ -110,6 +107,9 @@ case $PHP_VERSION in
         cd -; \
         rm -rf /usr/src/mailparse)
     ;;
+  8.6*)
+    pie install --no-build-tools-check --no-system-dependencies-check pecl/mailparse
+    ;;
   *)
     yes | pecl install mailparse
     ;;
@@ -117,7 +117,11 @@ esac
 
 case $PHP_VERSION in
   8.6*)
-    echo "Skipping apcu rdkafka yaml uuid msgpack for PHP $PHP_VERSION"
+    pie install --no-build-tools-check --no-system-dependencies-check apcu/apcu
+    pie install --no-build-tools-check --no-system-dependencies-check rdkafka/rdkafka
+    pie install --no-build-tools-check --no-system-dependencies-check pecl/yaml
+    pie install --no-build-tools-check --no-system-dependencies-check pecl/uuid
+    pie install --no-build-tools-check --no-system-dependencies-check msgpack/msgpack-php
     ;;
   *)
     yes | pecl install apcu rdkafka yaml uuid msgpack
@@ -132,7 +136,7 @@ case $PHP_VERSION in
     yes | pecl install decimal-1.5.3
     ;;
   8.6*)
-    echo "Skipping decimal for PHP $PHP_VERSION"
+    pie install --no-build-tools-check --no-system-dependencies-check php-decimal/ext-decimal
     ;;
   *)
     yes | pecl install decimal
@@ -144,7 +148,7 @@ case $PHP_VERSION in
     echo "" | pecl install amqp-1.11.0
     ;;
   8.6*)
-    echo "Skipping amqp for PHP $PHP_VERSION"
+    pie install --no-build-tools-check --no-system-dependencies-check php-amqp/php-amqp
     ;;
   *)
     echo "" | pecl install amqp
@@ -161,8 +165,11 @@ case $PHP_VERSION in
 esac
 
 case $PHP_VERSION in
-  8.5*|8.6*)
+  8.5*)
     echo "Skipping memcached for PHP $PHP_VERSION"
+    ;;
+  8.6*)
+    pie install --no-build-tools-check --no-system-dependencies-check php-memcached/php-memcached
     ;;
   *)
     echo "" | pecl install memcached
@@ -192,7 +199,7 @@ case $PHP_VERSION in
 esac
 
 case $PHP_VERSION in
-  8.5*|8.6*)
+  8.5*)
     php -m | grep -q '^redis$' || \
       (git clone --depth=1 https://github.com/phpredis/phpredis.git /usr/src/phpredis; \
         cd /usr/src/phpredis; \
@@ -200,6 +207,9 @@ case $PHP_VERSION in
         echo "extension=redis.so" > /usr/local/etc/php/conf.d/redis.ini; \
         cd -; \
         rm -rf /usr/src/phpredis)
+    ;;
+  8.6*)
+    php -m | grep -q '^redis$' || pie install --no-build-tools-check --no-system-dependencies-check phpredis/phpredis
     ;;
   8.*)
     mkdir -p /usr/src/php/ext/redis && curl -fsSL https://pecl.php.net/get/redis | tar xvz -C "/usr/src/php/ext/redis" --strip 1 && docker-php-ext-install redis
@@ -217,7 +227,7 @@ php -m | grep -q '^gettext$' || docker-php-ext-install gettext
 php -m | grep -q '^sockets$' || docker-php-ext-install sockets
 case $PHP_VERSION in
   8.6*)
-    docker-php-ext-enable mailparse
+    echo "ds, yaml, decimal, uuid, mailparse, msgpack, and amqp were already enabled by pie for PHP $PHP_VERSION"
     ;;
   *)
     docker-php-ext-enable ds yaml decimal uuid mailparse msgpack amqp
@@ -272,20 +282,22 @@ esac
 case $PHP_VERSION in
   8.6*)
     php -m | grep -q '^imagick$' || \
-      (git clone --depth=1 https://github.com/Imagick/imagick.git /usr/src/imagick; \
-        cd /usr/src/imagick; \
-        export CFLAGS="${CFLAGS:-} -DXtOffsetOf=offsetof"; \
-        phpize && ./configure && make -j"$(nproc)" && make install; \
-        echo "extension=imagick.so" > /usr/local/etc/php/conf.d/imagick.ini; \
-        cd -; \
-        rm -rf /usr/src/imagick)
+      (export CFLAGS="${CFLAGS:-} -DXtOffsetOf=offsetof"; \
+        pie install --no-build-tools-check --no-system-dependencies-check imagick/imagick)
       ;;
   *)
     yes | pecl install imagick
     ;;
 esac
 
-docker-php-ext-enable imagick
+case $PHP_VERSION in
+  8.6*)
+    echo "imagick was already enabled by pie for PHP $PHP_VERSION"
+    ;;
+  *)
+    docker-php-ext-enable imagick
+    ;;
+esac
 
 case $PHP_VERSION in
   8.4*|8.5*)
@@ -315,7 +327,7 @@ docker-php-ext-install gmp ldap xsl mysqli calendar gd pdo_mysql pdo_pgsql zip b
 
 case $PHP_VERSION in
   8.6*)
-    echo "Skipping rdkafka apcu enable for PHP $PHP_VERSION"
+    echo "rdkafka and apcu were already enabled by pie for PHP $PHP_VERSION"
     ;;
   *)
     docker-php-ext-enable rdkafka apcu
