@@ -12,6 +12,10 @@ case $PHP_VERSION in
     # and refuses to run under it (the only php available to run pie here
     # *is* the 8.6 build in progress), so skip that check.
     export BOX_REQUIREMENT_CHECKER=0
+    # pie refuses to auto-install missing build tools in non-interactive mode
+    # and libtoolize/glibtoolize (from the libtool package) isn't part of
+    # $PHPIZE_DEPS, so make sure it's there before pie tries to build anything.
+    apk add --no-cache libtool
     ;;
   *)
     pecl channel-update pecl.php.net
