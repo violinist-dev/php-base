@@ -16,42 +16,49 @@ case $PHP_VERSION in
     # and libtoolize/glibtoolize (from the libtool package) isn't part of
     # $PHPIZE_DEPS, so make sure it's there before pie tries to build anything.
     apk add --no-cache libtool
-    # PHP 8.6 dropped a handful of compatibility macros/functions extensions
-    # still rely on, and reorganized headers so some macros that used to be
-    # transitively visible no longer are. XtOffsetOf (-> offsetof) broke
-    # ext-ds the same way it already broke igbinary/imagick; zval_dtor
-    # (-> zval_ptr_dtor_nogc, same rename already used for igbinary) broke
-    # rdkafka the same way it already broke igbinary; EMPTY_SWITCH_DEFAULT_CASE()
-    # (used to mark a switch's default case unreachable) broke apcu - defining
-    # it away entirely just drops that defensive default case, which is
-    # harmless since the switches using it already enumerate every real case
-    # explicitly; INI_INT (a convenience macro around zend_ini_long, its
-    # definition hasn't changed in years) broke ext-decimal because whatever
-    # header used to pull it in transitively no longer does - define it
-    # ourselves rather than -include the real php_ini.h out of order, since
-    # php_ini.h expects things from php.h to already be included first;
-    # ZEND_PARSE_PARAMS_THROW (a flag to zend_parse_parameters_ex requesting
-    # a thrown TypeError on bad arguments) also broke ext-decimal - parameter
-    # parsing throws by default since PHP 8.0 regardless of flags, so the
-    # flag became redundant and was dropped; defining it as 0 preserves the
-    # intended behavior either way.
+    # PHP 8.6 dropped or hid behind reorganized headers a handful of
+    # compatibility macros/functions that extensions still rely on. Each was
+    # found by building a pie-installed (or git-cloned) extension on 8.6 and
+    # reading the compile error - see git history for exactly which extension
+    # surfaced which one. Fixes:
+    #   XtOffsetOf                  -> offsetof (plain rename)
+    #   zval_dtor                   -> zval_ptr_dtor_nogc (plain rename)
+    #   EMPTY_SWITCH_DEFAULT_CASE() -> nothing (just marked a switch's default
+    #                                  case unreachable; dropping it is
+    #                                  harmless since real cases are already
+    #                                  enumerated explicitly)
+    #   INI_INT/INI_STR/INI_FLT    -> their long-stable canonical definitions
+    #                                 (thin wrappers around zend_ini_long/
+    #                                 zend_ini_string/zend_ini_double), since
+    #                                 whatever header used to make them
+    #                                 transitively visible no longer does
+    #   ZEND_PARSE_PARAMS_THROW    -> 0 (parameter parsing throws a TypeError
+    #                                 by default since PHP 8.0 regardless of
+    #                                 flags, so this flag became a redundant
+    #                                 no-op and was dropped)
     #
-    # EMPTY_SWITCH_DEFAULT_CASE() needs parentheses in its -D definition,
-    # but CFLAGS gets read by two different mechanisms in the same build:
-    # Make expands $(CFLAGS) textually and then reparses the whole recipe
-    # line in a fresh shell (quoting survives), while autoconf's own
-    # compiler sanity check expands $CFLAGS as a plain shell variable inside
-    # eval (quoting does NOT survive - the literal quote characters reach
-    # cc and break "checking whether the C compiler works"). A quoted -D
-    # value can't satisfy both, so put macros needing special characters in
-    # a real header instead and pull it in everywhere via -include, which is
-    # just a plain path.
+    # EMPTY_SWITCH_DEFAULT_CASE() needs parentheses in its definition, but
+    # CFLAGS gets read by two different mechanisms in the same build: Make
+    # expands $(CFLAGS) textually and then reparses the whole recipe line in
+    # a fresh shell (quoting survives), while autoconf's own compiler sanity
+    # check expands $CFLAGS as a plain shell variable inside eval (quoting
+    # does NOT survive - the literal quote characters reach cc and break
+    # "checking whether the C compiler works"). A quoted -D value can't
+    # satisfy both, so anything needing special characters goes in a real
+    # header instead, pulled in everywhere via -include (just a plain path,
+    # immune to the inconsistency), while plain renames stay as -D flags.
     cat > /root/php86-pie-compat.h <<'EOC'
 #ifndef EMPTY_SWITCH_DEFAULT_CASE
 #define EMPTY_SWITCH_DEFAULT_CASE()
 #endif
 #ifndef INI_INT
 #define INI_INT(name) ((zend_long) zend_ini_long((name), sizeof(name)-1, 0))
+#endif
+#ifndef INI_STR
+#define INI_STR(name) zend_ini_string((name), sizeof(name)-1, 0)
+#endif
+#ifndef INI_FLT
+#define INI_FLT(name) zend_ini_double((name), sizeof(name)-1, 0)
 #endif
 #ifndef ZEND_PARSE_PARAMS_THROW
 #define ZEND_PARSE_PARAMS_THROW 0
