@@ -8,45 +8,9 @@ case $PHP_VERSION in
     echo "Installing pie in place of pecl (pecl is not available yet for this alpha release)"
     curl -fsSL -o /usr/local/bin/pie https://github.com/php/pie/releases/latest/download/pie.phar
     chmod +x /usr/local/bin/pie
-    # pie.phar's bundled Box requirements checker doesn't know about 8.6 yet
-    # and refuses to run under it (the only php available to run pie here
-    # *is* the 8.6 build in progress), so skip that check.
+    # todo: Temp workaround for PHP 8.6.
     export BOX_REQUIREMENT_CHECKER=0
-    # pie refuses to auto-install missing build tools in non-interactive mode
-    # and libtoolize/glibtoolize (from the libtool package) isn't part of
-    # $PHPIZE_DEPS, so make sure it's there before pie tries to build anything.
     apk add --no-cache libtool
-    # PHP 8.6 dropped or hid behind reorganized headers a handful of
-    # compatibility macros/functions that extensions still rely on. Each was
-    # found by building a pie-installed (or git-cloned) extension on 8.6 and
-    # reading the compile error - see git history for exactly which extension
-    # surfaced which one. Fixes:
-    #   XtOffsetOf                  -> offsetof (plain rename)
-    #   zval_dtor                   -> zval_ptr_dtor_nogc (plain rename)
-    #   EMPTY_SWITCH_DEFAULT_CASE() -> nothing (just marked a switch's default
-    #                                  case unreachable; dropping it is
-    #                                  harmless since real cases are already
-    #                                  enumerated explicitly)
-    #   INI_INT/INI_STR/INI_FLT    -> their long-stable canonical definitions
-    #                                 (thin wrappers around zend_ini_long/
-    #                                 zend_ini_string/zend_ini_double), since
-    #                                 whatever header used to make them
-    #                                 transitively visible no longer does
-    #   ZEND_PARSE_PARAMS_THROW    -> 0 (parameter parsing throws a TypeError
-    #                                 by default since PHP 8.0 regardless of
-    #                                 flags, so this flag became a redundant
-    #                                 no-op and was dropped)
-    #
-    # EMPTY_SWITCH_DEFAULT_CASE() needs parentheses in its definition, but
-    # CFLAGS gets read by two different mechanisms in the same build: Make
-    # expands $(CFLAGS) textually and then reparses the whole recipe line in
-    # a fresh shell (quoting survives), while autoconf's own compiler sanity
-    # check expands $CFLAGS as a plain shell variable inside eval (quoting
-    # does NOT survive - the literal quote characters reach cc and break
-    # "checking whether the C compiler works"). A quoted -D value can't
-    # satisfy both, so anything needing special characters goes in a real
-    # header instead, pulled in everywhere via -include (just a plain path,
-    # immune to the inconsistency), while plain renames stay as -D flags.
     cat > /root/php86-pie-compat.h <<'EOC'
 #ifndef EMPTY_SWITCH_DEFAULT_CASE
 #define EMPTY_SWITCH_DEFAULT_CASE()
@@ -64,8 +28,6 @@ case $PHP_VERSION in
 #define ZEND_PARSE_PARAMS_THROW 0
 #endif
 EOC
-    # Apply all these shims for every extension built on 8.6 for the rest of
-    # this script, instead of waiting for each one to fail in turn.
     export CFLAGS="${CFLAGS:-} -DXtOffsetOf=offsetof -Dzval_dtor=zval_ptr_dtor_nogc -include /root/php86-pie-compat.h"
     ;;
   *)
@@ -127,7 +89,7 @@ case $PHP_VERSION in
     yes | pecl install ds-1.6.0
     ;;
   8.6*)
-    pie install -vvv php-ds/ext-ds
+    pie install php-ds/ext-ds
     ;;
   *)
     # If we really need it.
@@ -227,12 +189,6 @@ esac
 
 case $PHP_VERSION in
   8.5*|8.6*)
-    # php-memcached's latest stable release still treats the session save
-    # handler's save_path as a plain char*, but PHP's PS_OPEN_FUNC passes a
-    # zend_string* - a real type mismatch pie can't shim away with CFLAGS,
-    # unlike the macro/header issues elsewhere in this script. Skip it here
-    # the same way it's skipped for 8.5, instead of guessing at a source fix
-    # blind.
     echo "Skipping memcached for PHP $PHP_VERSION"
     ;;
   *)
