@@ -75,7 +75,16 @@ case $PHP_VERSION in
 esac
 
 case $PHP_VERSION in
-  8.5*|8.6*)
+  8.5*)
+    php -m | grep -q '^igbinary$' || \
+      (git clone --depth=1 https://github.com/igbinary/igbinary.git /usr/src/igbinary; \
+        cd /usr/src/igbinary; \
+        phpize && ./configure && make -j"$(nproc)" && make install; \
+        echo "extension=igbinary.so" > /usr/local/etc/php/conf.d/igbinary.ini; \
+        cd -; \
+        rm -rf /usr/src/igbinary)
+    ;;
+  8.6*)
     php -m | grep -q '^igbinary$' || \
       (git clone --depth=1 https://github.com/igbinary/igbinary.git /usr/src/igbinary; \
         cd /usr/src/igbinary; \
