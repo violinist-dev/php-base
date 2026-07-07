@@ -294,7 +294,7 @@ case $PHP_VERSION in
 esac
 
 case $PHP_VERSION in
-  8.5*)
+  8.5*|8.6*)
     echo "Skipping opcache for PHP $PHP_VERSION"
     ;;
   *)
