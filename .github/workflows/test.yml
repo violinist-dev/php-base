@@ -24,6 +24,7 @@ jobs:
           - "8.3"
           - "8.4"
           - "8.5"
+          - "8.6"
     steps:
       - name: Dump matrix context
         env:
@@ -43,7 +44,7 @@ jobs:
         if: matrix.php-version == '8.6'
         run: docker build -t php-base --build-arg PHP_VERSION=$PHP_VERSION .
         env:
-          PHP_VERSION: '8.5.0RC1'
+          PHP_VERSION: '8.6.0alpha1'
 
       - name: Output modules
         run: docker run php-base php -m
@@ -61,5 +62,5 @@ jobs:
         run: composer --version
 
       - name: Check requirements
-        if: matrix.php-version != '8.5'
+        if: matrix.php-version != '8.5' && matrix.php-version != '8.6'
         run: docker run -w "/test" -v $(pwd):/test php-base composer install
