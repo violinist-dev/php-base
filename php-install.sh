@@ -16,11 +16,15 @@ case $PHP_VERSION in
     # and libtoolize/glibtoolize (from the libtool package) isn't part of
     # $PHPIZE_DEPS, so make sure it's there before pie tries to build anything.
     apk add --no-cache libtool
-    # PHP 8.6 dropped the XtOffsetOf macro (replaced by plain offsetof), which
-    # broke ext-ds's build the same way it already broke igbinary/imagick.
-    # Apply the same shim for every extension built on 8.6 for the rest of
-    # this script, instead of waiting for each one to fail in turn.
-    export CFLAGS="${CFLAGS:-} -DXtOffsetOf=offsetof"
+    # PHP 8.6 dropped a handful of compatibility macros extensions still rely
+    # on. XtOffsetOf (-> offsetof) broke ext-ds the same way it already broke
+    # igbinary/imagick; EMPTY_SWITCH_DEFAULT_CASE() (used to mark a switch's
+    # default case unreachable) broke apcu. Defining it away entirely just
+    # drops that defensive default case, which is harmless since the switches
+    # using it already enumerate every real case explicitly. Apply both shims
+    # for every extension built on 8.6 for the rest of this script, instead of
+    # waiting for each one to fail in turn.
+    export CFLAGS="${CFLAGS:-} -DXtOffsetOf=offsetof -D'EMPTY_SWITCH_DEFAULT_CASE()='"
     ;;
   *)
     pecl channel-update pecl.php.net
