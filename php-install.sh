@@ -29,7 +29,12 @@ case $PHP_VERSION in
     # definition hasn't changed in years) broke ext-decimal because whatever
     # header used to pull it in transitively no longer does - define it
     # ourselves rather than -include the real php_ini.h out of order, since
-    # php_ini.h expects things from php.h to already be included first.
+    # php_ini.h expects things from php.h to already be included first;
+    # ZEND_PARSE_PARAMS_THROW (a flag to zend_parse_parameters_ex requesting
+    # a thrown TypeError on bad arguments) also broke ext-decimal - parameter
+    # parsing throws by default since PHP 8.0 regardless of flags, so the
+    # flag became redundant and was dropped; defining it as 0 preserves the
+    # intended behavior either way.
     #
     # EMPTY_SWITCH_DEFAULT_CASE() needs parentheses in its -D definition,
     # but CFLAGS gets read by two different mechanisms in the same build:
@@ -48,8 +53,11 @@ case $PHP_VERSION in
 #ifndef INI_INT
 #define INI_INT(name) ((zend_long) zend_ini_long((name), sizeof(name)-1, 0))
 #endif
+#ifndef ZEND_PARSE_PARAMS_THROW
+#define ZEND_PARSE_PARAMS_THROW 0
+#endif
 EOC
-    # Apply all three shims for every extension built on 8.6 for the rest of
+    # Apply all these shims for every extension built on 8.6 for the rest of
     # this script, instead of waiting for each one to fail in turn.
     export CFLAGS="${CFLAGS:-} -DXtOffsetOf=offsetof -Dzval_dtor=zval_ptr_dtor_nogc -include /root/php86-pie-compat.h"
     ;;
