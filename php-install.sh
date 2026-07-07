@@ -161,17 +161,7 @@ case $PHP_VERSION in
 esac
 
 case $PHP_VERSION in
-  8.5*)
-      # Yknow if we really need it.
-      php -m | grep -q '^mailparse$' || \
-        (git clone --depth=1 https://github.com/php/pecl-mail-mailparse.git /usr/src/mailparse; \
-        cd /usr/src/mailparse; \
-        phpize && ./configure && make -j"$(nproc)" && make install; \
-        echo "extension=mailparse.so" > /usr/local/etc/php/conf.d/mailparse.ini; \
-        cd -; \
-        rm -rf /usr/src/mailparse)
-    ;;
-  8.6*)
+  8.5*|8.6*)
       # Yknow if we really need it.
       php -m | grep -q '^mailparse$' || \
         (git clone --depth=1 https://github.com/php/pecl-mail-mailparse.git /usr/src/mailparse; \
@@ -273,16 +263,7 @@ case $PHP_VERSION in
 esac
 
 case $PHP_VERSION in
-  8.5*)
-    php -m | grep -q '^redis$' || \
-      (git clone --depth=1 https://github.com/phpredis/phpredis.git /usr/src/phpredis; \
-        cd /usr/src/phpredis; \
-        phpize && ./configure && make -j"$(nproc)" && make install; \
-        echo "extension=redis.so" > /usr/local/etc/php/conf.d/redis.ini; \
-        cd -; \
-        rm -rf /usr/src/phpredis)
-    ;;
-  8.6*)
+  8.5*|8.6*)
     php -m | grep -q '^redis$' || \
       (git clone --depth=1 https://github.com/phpredis/phpredis.git /usr/src/phpredis; \
         cd /usr/src/phpredis; \
