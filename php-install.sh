@@ -21,10 +21,25 @@ case $PHP_VERSION in
     # igbinary/imagick; EMPTY_SWITCH_DEFAULT_CASE() (used to mark a switch's
     # default case unreachable) broke apcu. Defining it away entirely just
     # drops that defensive default case, which is harmless since the switches
-    # using it already enumerate every real case explicitly. Apply both shims
-    # for every extension built on 8.6 for the rest of this script, instead of
-    # waiting for each one to fail in turn.
-    export CFLAGS="${CFLAGS:-} -DXtOffsetOf=offsetof -D'EMPTY_SWITCH_DEFAULT_CASE()='"
+    # using it already enumerate every real case explicitly.
+    #
+    # EMPTY_SWITCH_DEFAULT_CASE() needs parentheses in its -D definition,
+    # but CFLAGS gets read by two different mechanisms in the same build:
+    # Make expands $(CFLAGS) textually and then reparses the whole recipe
+    # line in a fresh shell (quoting survives), while autoconf's own
+    # compiler sanity check expands $CFLAGS as a plain shell variable inside
+    # eval (quoting does NOT survive - the literal quote characters reach
+    # cc and break "checking whether the C compiler works"). A quoted -D
+    # value can't satisfy both, so put the macro in a real header instead
+    # and pull it in everywhere via -include, which is just a plain path.
+    cat > /root/php86-pie-compat.h <<'EOC'
+#ifndef EMPTY_SWITCH_DEFAULT_CASE
+#define EMPTY_SWITCH_DEFAULT_CASE()
+#endif
+EOC
+    # Apply both shims for every extension built on 8.6 for the rest of this
+    # script, instead of waiting for each one to fail in turn.
+    export CFLAGS="${CFLAGS:-} -DXtOffsetOf=offsetof -include /root/php86-pie-compat.h"
     ;;
   *)
     pecl channel-update pecl.php.net
