@@ -182,7 +182,7 @@ case $PHP_VERSION in
 esac
 
 case $PHP_VERSION in
-  8.5*)
+  8.5*|8.6*)
     php -m | grep -q '^redis$' || \
       (git clone --depth=1 https://github.com/phpredis/phpredis.git /usr/src/phpredis; \
         cd /usr/src/phpredis; \
