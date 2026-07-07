@@ -140,11 +140,11 @@ esac
 
 case $PHP_VERSION in
   8.6*)
-    pie install -vvv apcu/apcu
-    pie install -vvv rdkafka/rdkafka
-    pie install -vvv pecl/yaml
-    pie install -vvv pecl/uuid
-    pie install -vvv msgpack/msgpack-php
+    pie install apcu/apcu
+    pie install rdkafka/rdkafka
+    pie install pecl/yaml
+    pie install pecl/uuid
+    pie install msgpack/msgpack-php
     ;;
   *)
     yes | pecl install apcu rdkafka yaml uuid msgpack
@@ -159,7 +159,7 @@ case $PHP_VERSION in
     yes | pecl install decimal-1.5.3
     ;;
   8.6*)
-    pie install -vvv php-decimal/ext-decimal
+    pie install php-decimal/ext-decimal
     ;;
   *)
     yes | pecl install decimal
@@ -171,7 +171,7 @@ case $PHP_VERSION in
     echo "" | pecl install amqp-1.11.0
     ;;
   8.6*)
-    pie install -vvv php-amqp/php-amqp
+    pie install php-amqp/php-amqp
     ;;
   *)
     echo "" | pecl install amqp
