@@ -236,11 +236,14 @@ case $PHP_VERSION in
 esac
 
 case $PHP_VERSION in
-  8.5*)
+  8.5*|8.6*)
+    # php-memcached's latest stable release still treats the session save
+    # handler's save_path as a plain char*, but PHP's PS_OPEN_FUNC passes a
+    # zend_string* - a real type mismatch pie can't shim away with CFLAGS,
+    # unlike the macro/header issues elsewhere in this script. Skip it here
+    # the same way it's skipped for 8.5, instead of guessing at a source fix
+    # blind.
     echo "Skipping memcached for PHP $PHP_VERSION"
-    ;;
-  8.6*)
-    pie install -vvv php-memcached/php-memcached
     ;;
   *)
     echo "" | pecl install memcached
