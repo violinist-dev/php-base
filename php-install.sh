@@ -68,7 +68,7 @@ case $PHP_VERSION in
     yes | pecl install ds-1.6.0
     ;;
   8.6*)
-    pie install --no-build-tools-check --no-system-dependencies-check php-ds/ext-ds
+    pie install php-ds/ext-ds
     ;;
   *)
     # If we really need it.
@@ -129,11 +129,11 @@ esac
 
 case $PHP_VERSION in
   8.6*)
-    pie install --no-build-tools-check --no-system-dependencies-check apcu/apcu
-    pie install --no-build-tools-check --no-system-dependencies-check rdkafka/rdkafka
-    pie install --no-build-tools-check --no-system-dependencies-check pecl/yaml
-    pie install --no-build-tools-check --no-system-dependencies-check pecl/uuid
-    pie install --no-build-tools-check --no-system-dependencies-check msgpack/msgpack-php
+    pie install apcu/apcu
+    pie install rdkafka/rdkafka
+    pie install pecl/yaml
+    pie install pecl/uuid
+    pie install msgpack/msgpack-php
     ;;
   *)
     yes | pecl install apcu rdkafka yaml uuid msgpack
@@ -148,7 +148,7 @@ case $PHP_VERSION in
     yes | pecl install decimal-1.5.3
     ;;
   8.6*)
-    pie install --no-build-tools-check --no-system-dependencies-check php-decimal/ext-decimal
+    pie install php-decimal/ext-decimal
     ;;
   *)
     yes | pecl install decimal
@@ -160,7 +160,7 @@ case $PHP_VERSION in
     echo "" | pecl install amqp-1.11.0
     ;;
   8.6*)
-    pie install --no-build-tools-check --no-system-dependencies-check php-amqp/php-amqp
+    pie install php-amqp/php-amqp
     ;;
   *)
     echo "" | pecl install amqp
@@ -181,7 +181,7 @@ case $PHP_VERSION in
     echo "Skipping memcached for PHP $PHP_VERSION"
     ;;
   8.6*)
-    pie install --no-build-tools-check --no-system-dependencies-check php-memcached/php-memcached
+    pie install php-memcached/php-memcached
     ;;
   *)
     echo "" | pecl install memcached
