@@ -16,9 +16,11 @@ case $PHP_VERSION in
     # and libtoolize/glibtoolize (from the libtool package) isn't part of
     # $PHPIZE_DEPS, so make sure it's there before pie tries to build anything.
     apk add --no-cache libtool
-    # PHP 8.6 dropped a handful of compatibility macros extensions still rely
-    # on. XtOffsetOf (-> offsetof) broke ext-ds the same way it already broke
-    # igbinary/imagick; EMPTY_SWITCH_DEFAULT_CASE() (used to mark a switch's
+    # PHP 8.6 dropped a handful of compatibility macros/functions extensions
+    # still rely on. XtOffsetOf (-> offsetof) broke ext-ds the same way it
+    # already broke igbinary/imagick; zval_dtor (-> zval_ptr_dtor_nogc, same
+    # rename already used for igbinary) broke rdkafka the same way it already
+    # broke igbinary; EMPTY_SWITCH_DEFAULT_CASE() (used to mark a switch's
     # default case unreachable) broke apcu. Defining it away entirely just
     # drops that defensive default case, which is harmless since the switches
     # using it already enumerate every real case explicitly.
@@ -37,9 +39,9 @@ case $PHP_VERSION in
 #define EMPTY_SWITCH_DEFAULT_CASE()
 #endif
 EOC
-    # Apply both shims for every extension built on 8.6 for the rest of this
-    # script, instead of waiting for each one to fail in turn.
-    export CFLAGS="${CFLAGS:-} -DXtOffsetOf=offsetof -include /root/php86-pie-compat.h"
+    # Apply all three shims for every extension built on 8.6 for the rest of
+    # this script, instead of waiting for each one to fail in turn.
+    export CFLAGS="${CFLAGS:-} -DXtOffsetOf=offsetof -Dzval_dtor=zval_ptr_dtor_nogc -include /root/php86-pie-compat.h"
     ;;
   *)
     pecl channel-update pecl.php.net
