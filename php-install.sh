@@ -79,7 +79,7 @@ case $PHP_VERSION in
     php -m | grep -q '^igbinary$' || \
       (git clone --depth=1 https://github.com/igbinary/igbinary.git /usr/src/igbinary; \
         cd /usr/src/igbinary; \
-        export CFLAGS="${CFLAGS:-} -DXtOffsetOf=offsetof"; \
+        export CFLAGS="${CFLAGS:-} -DXtOffsetOf=offsetof -Dzval_dtor=zval_ptr_dtor_nogc"; \
         phpize && ./configure && make -j"$(nproc)" && make install; \
         echo "extension=igbinary.so" > /usr/local/etc/php/conf.d/igbinary.ini; \
         cd -; \
@@ -284,6 +284,9 @@ case $PHP_VERSION in
     # If we really need it.
     php -m | grep -q '^imap$' || yes | pecl install imap
     docker-php-ext-enable imap
+    ;;
+  8.6*)
+    echo "Skipping imap for PHP $PHP_VERSION (ext/imap no longer bundled, and pecl is unavailable)"
     ;;
   *)
     docker-php-ext-install imap
