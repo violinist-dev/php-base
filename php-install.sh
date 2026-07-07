@@ -16,6 +16,11 @@ case $PHP_VERSION in
     # and libtoolize/glibtoolize (from the libtool package) isn't part of
     # $PHPIZE_DEPS, so make sure it's there before pie tries to build anything.
     apk add --no-cache libtool
+    # PHP 8.6 dropped the XtOffsetOf macro (replaced by plain offsetof), which
+    # broke ext-ds's build the same way it already broke igbinary/imagick.
+    # Apply the same shim for every extension built on 8.6 for the rest of
+    # this script, instead of waiting for each one to fail in turn.
+    export CFLAGS="${CFLAGS:-} -DXtOffsetOf=offsetof"
     ;;
   *)
     pecl channel-update pecl.php.net
