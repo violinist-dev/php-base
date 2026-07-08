@@ -249,7 +249,7 @@ esac
 # gd has slightly different build arguments on newer PHP.
 case $PHP_VERSION in
   7.4|8.*)
-    apk add --no-cache oniguruma-dev
+    apk add --no-cache --virtual .build-deps-gd oniguruma-dev
     docker-php-ext-configure gd --with-jpeg=/usr
     ;;
   *)
@@ -291,7 +291,7 @@ docker-php-ext-enable imagick
 
 case $PHP_VERSION in
   8.4*|8.5*)
-    apk add --no-cache krb5-dev
+    apk add --no-cache --virtual .build-deps-imap krb5-dev
     # If we really need it.
     php -m | grep -q '^imap$' || yes | pecl install imap
     docker-php-ext-enable imap
@@ -333,7 +333,13 @@ runDeps="$( \
 if [ -n "$runDeps" ]; then
   apk add --no-cache --virtual .phpexts-rundeps $runDeps
 fi
-apk del --no-network .build-deps
+extraBuildDeps=""
+for extra in .build-deps-gd .build-deps-imap; do
+  if apk info -e "$extra" >/dev/null 2>&1; then
+    extraBuildDeps="$extraBuildDeps $extra"
+  fi
+done
+apk del --no-network .build-deps $extraBuildDeps
 
 docker-php-source delete
 
