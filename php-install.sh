@@ -1,6 +1,6 @@
 set -eu
 
-apk add --no-cache sudo git libpng libjpeg libpq libxml2 libldap mysql-client openssh-client rsync patch bash imagemagick imagemagick-libs rabbitmq-c gettext icu
+apk add --no-cache sudo git libpng libjpeg libpq libxml2 libldap cyrus-sasl unixodbc file mysql-client openssh-client rsync patch bash imagemagick imagemagick-libs rabbitmq-c gettext icu
 
 apk add --no-cache --virtual .build-deps unixodbc-dev brotli-dev gmp-dev yaml-dev samba-dev openldap-dev pcre-dev libxslt-dev imap-dev libzip-dev \
     rabbitmq-c-dev mpdecimal-dev gettext-dev imagemagick-dev librdkafka-dev autoconf g++ make icu-dev libpng-dev libjpeg-turbo-dev postgresql-dev libxml2-dev bzip2-dev libmemcached-dev linux-headers pax-utils $PHPIZE_DEPS
