@@ -12,6 +12,9 @@ on:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   test:
@@ -49,6 +52,39 @@ jobs:
         run: docker build -t php-base --build-arg PHP_VERSION=$PHP_VERSION .
         env:
           PHP_VERSION: '8.6.0alpha1'
+
+      - name: Pull main image for size comparison
+        id: pull_main
+        continue-on-error: true
+        run: docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.php-version }}-multi
+
+      - name: Output image size from main
+        if: steps.pull_main.outcome == 'success'
+        id: main_size
+        run: |
+          size=$(docker image inspect ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.php-version }}-multi --format='{{ .Size }}')
+          echo "Main image size: $(numfmt --to=iec --suffix=B "$size")"
+          echo "size=$size" >> "$GITHUB_OUTPUT"
+
+      - name: Output image size for build
+        id: build_size
+        run: |
+          size=$(docker image inspect php-base --format='{{ .Size }}')
+          echo "Build image size: $(numfmt --to=iec --suffix=B "$size")"
+          echo "size=$size" >> "$GITHUB_OUTPUT"
+
+      - name: Output image size diff
+        if: steps.pull_main.outcome == 'success'
+        run: |
+          main_size=${{ steps.main_size.outputs.size }}
+          build_size=${{ steps.build_size.outputs.size }}
+          diff=$((build_size - main_size))
+          if [ "$diff" -gt 0 ]; then
+            sign="+"
+          else
+            sign=""
+          fi
+          echo "Image size diff (build vs main): ${sign}$(numfmt --to=iec --suffix=B -- "$diff")"
 
       - name: Output modules
         run: docker run php-base php -m
