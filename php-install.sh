@@ -5,7 +5,30 @@ apk add --no-cache unixodbc-dev brotli-dev gmp-dev yaml-dev samba-dev libldap op
 
 case $PHP_VERSION in
   8.6*)
-    echo "Skipping pecl channel-update on PHP $PHP_VERSION (pecl is not available yet for this alpha release)"
+    echo "Installing pie in place of pecl (pecl is not available yet for this alpha release)"
+    curl -fsSL -o /usr/local/bin/pie https://github.com/php/pie/releases/latest/download/pie.phar
+    chmod +x /usr/local/bin/pie
+    # todo: Temp workaround for PHP 8.6.
+    export BOX_REQUIREMENT_CHECKER=0
+    apk add --no-cache libtool
+    cat > /root/php86-pie-compat.h <<'EOC'
+#ifndef EMPTY_SWITCH_DEFAULT_CASE
+#define EMPTY_SWITCH_DEFAULT_CASE()
+#endif
+#ifndef INI_INT
+#define INI_INT(name) ((zend_long) zend_ini_long((name), sizeof(name)-1, 0))
+#endif
+#ifndef INI_STR
+#define INI_STR(name) zend_ini_string((name), sizeof(name)-1, 0)
+#endif
+#ifndef INI_FLT
+#define INI_FLT(name) zend_ini_double((name), sizeof(name)-1, 0)
+#endif
+#ifndef ZEND_PARSE_PARAMS_THROW
+#define ZEND_PARSE_PARAMS_THROW 0
+#endif
+EOC
+    export CFLAGS="${CFLAGS:-} -DXtOffsetOf=offsetof -Dzval_dtor=zval_ptr_dtor_nogc -include /root/php86-pie-compat.h"
     ;;
   *)
     pecl channel-update pecl.php.net
@@ -66,7 +89,7 @@ case $PHP_VERSION in
     yes | pecl install ds-1.6.0
     ;;
   8.6*)
-    echo "Skipping ds for PHP $PHP_VERSION"
+    pie install php-ds/ext-ds
     ;;
   *)
     # If we really need it.
@@ -117,7 +140,11 @@ esac
 
 case $PHP_VERSION in
   8.6*)
-    echo "Skipping apcu rdkafka yaml uuid msgpack for PHP $PHP_VERSION"
+    pie install apcu/apcu
+    pie install rdkafka/rdkafka
+    pie install pecl/yaml
+    pie install pecl/uuid
+    pie install msgpack/msgpack-php
     ;;
   *)
     yes | pecl install apcu rdkafka yaml uuid msgpack
@@ -132,7 +159,7 @@ case $PHP_VERSION in
     yes | pecl install decimal-1.5.3
     ;;
   8.6*)
-    echo "Skipping decimal for PHP $PHP_VERSION"
+    pie install php-decimal/ext-decimal
     ;;
   *)
     yes | pecl install decimal
@@ -144,7 +171,7 @@ case $PHP_VERSION in
     echo "" | pecl install amqp-1.11.0
     ;;
   8.6*)
-    echo "Skipping amqp for PHP $PHP_VERSION"
+    pie install php-amqp/php-amqp
     ;;
   *)
     echo "" | pecl install amqp
@@ -217,7 +244,7 @@ php -m | grep -q '^gettext$' || docker-php-ext-install gettext
 php -m | grep -q '^sockets$' || docker-php-ext-install sockets
 case $PHP_VERSION in
   8.6*)
-    docker-php-ext-enable mailparse
+    echo "ds, yaml, decimal, uuid, msgpack, and amqp were already enabled by pie, and mailparse by its own install step, for PHP $PHP_VERSION"
     ;;
   *)
     docker-php-ext-enable ds yaml decimal uuid mailparse msgpack amqp
@@ -285,7 +312,14 @@ case $PHP_VERSION in
     ;;
 esac
 
-docker-php-ext-enable imagick
+case $PHP_VERSION in
+  8.6*)
+    php -m | grep -q '^imagick$' || docker-php-ext-enable imagick
+    ;;
+  *)
+    docker-php-ext-enable imagick
+    ;;
+esac
 
 case $PHP_VERSION in
   8.4*|8.5*)
@@ -315,7 +349,7 @@ docker-php-ext-install gmp ldap xsl mysqli calendar gd pdo_mysql pdo_pgsql zip b
 
 case $PHP_VERSION in
   8.6*)
-    echo "Skipping rdkafka apcu enable for PHP $PHP_VERSION"
+    echo "rdkafka and apcu were already enabled by pie for PHP $PHP_VERSION"
     ;;
   *)
     docker-php-ext-enable rdkafka apcu
