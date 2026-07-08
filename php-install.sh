@@ -1,15 +1,7 @@
 set -eu
 
-# Runtime tools and libraries that are actually used in the finished image
-# (CLI tools invoked directly, plus a couple of libs kept explicit rather
-# than relying on auto-detection below).
 apk add --no-cache sudo git libpng libjpeg libpq libxml2 libldap mysql-client openssh-client rsync patch bash imagemagick imagemagick-libs rabbitmq-c gettext icu
 
-# Compilers, headers and -dev packages needed only to build the PHP
-# extensions below. Everything in this virtual group is removed near the
-# end of the script once the extensions are compiled; the shared libraries
-# the compiled .so files actually need at runtime are detected and kept
-# separately (see the cleanup step after all extensions are built).
 apk add --no-cache --virtual .build-deps unixodbc-dev brotli-dev gmp-dev yaml-dev samba-dev openldap-dev pcre-dev libxslt-dev imap-dev libzip-dev \
     rabbitmq-c-dev mpdecimal-dev gettext-dev imagemagick-dev librdkafka-dev autoconf g++ make icu-dev libpng-dev libjpeg-turbo-dev postgresql-dev libxml2-dev bzip2-dev libmemcached-dev linux-headers pax-utils $PHPIZE_DEPS
 
@@ -332,10 +324,6 @@ case $PHP_VERSION in
     ;;
 esac
 
-# All PHP extensions are built by this point. Figure out which shared
-# libraries the compiled extensions actually link against, keep those
-# (regardless of which -dev package originally provided their headers),
-# and drop the compilers/headers/-dev packages used to build them.
 runDeps="$( \
 	scanelf --needed --nobanner --format '%n#p' --recursive /usr/local/lib/php/extensions 2>/dev/null \
 		| tr ',' '\n' \
@@ -347,8 +335,6 @@ if [ -n "$runDeps" ]; then
 fi
 apk del --no-network .build-deps
 
-# The PHP source tree extracted by docker-php-ext-configure/-install to
-# build extensions from source is only needed at build time.
 docker-php-source delete
 
 mkdir ~/.ssh/
