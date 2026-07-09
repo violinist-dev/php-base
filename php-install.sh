@@ -1,7 +1,9 @@
 set -eu
 
-apk add --no-cache unixodbc-dev brotli-dev gmp-dev yaml-dev samba-dev libldap openldap-dev pcre-dev libxslt-dev imap-dev sudo git libpng libjpeg libpq libxml2 mysql-client openssh-client rsync patch bash imagemagick libzip-dev \
-    imagemagick-libs unixodbc-dev rabbitmq-c rabbitmq-c-dev mpdecimal-dev gettext gettext-dev imagemagick-dev librdkafka-dev autoconf g++ make icu-dev libpng-dev libjpeg-turbo-dev postgresql-dev libxml2-dev bzip2-dev icu icu-dev libmemcached-dev linux-headers $PHPIZE_DEPS
+apk add --no-cache sudo git libpng libjpeg libpq libxml2 libldap cyrus-sasl unixodbc file mysql-client openssh-client rsync patch bash imagemagick imagemagick-libs rabbitmq-c gettext icu
+
+apk add --no-cache --virtual .build-deps unixodbc-dev brotli-dev gmp-dev yaml-dev samba-dev openldap-dev pcre-dev libxslt-dev imap-dev libzip-dev \
+    rabbitmq-c-dev mpdecimal-dev gettext-dev imagemagick-dev librdkafka-dev autoconf g++ make icu-dev libpng-dev libjpeg-turbo-dev postgresql-dev libxml2-dev bzip2-dev libmemcached-dev linux-headers pax-utils $PHPIZE_DEPS
 
 case $PHP_VERSION in
   8.6*)
@@ -274,7 +276,7 @@ esac
 # gd has slightly different build arguments on newer PHP.
 case $PHP_VERSION in
   7.4|8.*)
-    apk add --no-cache oniguruma-dev
+    apk add --no-cache --virtual .build-deps-gd oniguruma-dev
     docker-php-ext-configure gd --with-jpeg=/usr
     ;;
   *)
@@ -323,7 +325,7 @@ esac
 
 case $PHP_VERSION in
   8.4*|8.5*)
-    apk add --no-cache krb5-dev
+    apk add --no-cache --virtual .build-deps-imap krb5-dev
     # If we really need it.
     php -m | grep -q '^imap$' || yes | pecl install imap
     docker-php-ext-enable imap
@@ -355,6 +357,25 @@ case $PHP_VERSION in
     docker-php-ext-enable rdkafka apcu
     ;;
 esac
+
+runDeps="$( \
+	scanelf --needed --nobanner --format '%n#p' --recursive /usr/local/lib/php/extensions 2>/dev/null \
+		| tr ',' '\n' \
+		| sort -u \
+		| awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
+)"
+if [ -n "$runDeps" ]; then
+  apk add --no-cache --virtual .phpexts-rundeps $runDeps
+fi
+extraBuildDeps=""
+for extra in .build-deps-gd .build-deps-imap; do
+  if apk info -e "$extra" >/dev/null 2>&1; then
+    extraBuildDeps="$extraBuildDeps $extra"
+  fi
+done
+apk del --no-network .build-deps $extraBuildDeps
+
+docker-php-source delete
 
 mkdir ~/.ssh/
 ssh-keyscan -t rsa git.drupal.org >> ~/.ssh/known_hosts
