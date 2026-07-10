@@ -25,5 +25,12 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Run zizmor
+      - name: Run zizmor (upload to Security tab)
         uses: zizmorcore/zizmor-action@192e21d79ab29983730a13d1382995c2307fbcaa
+
+      - name: Run zizmor (fail on high severity)
+        run: |
+          pip install zizmor
+          zizmor --min-severity=high .
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
