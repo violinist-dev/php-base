@@ -223,11 +223,6 @@ case $PHP_VERSION in
     php -m | grep -q '^redis$' || (
       git clone --depth=1 https://github.com/phpredis/phpredis.git /usr/src/phpredis &&
       cd /usr/src/phpredis &&
-      # Pin to a commit verified to build against the current PHP 8.6 base image.
-      # phpredis tracks php-src's development branch closely, so its unpinned HEAD
-      # can (and has) broken against whatever alpha/beta of 8.6 we're building.
-      # Bump this hash when moving to a newer 8.6 pre-release.
-      git checkout e3273a90fe0521de4c35a7410e186be68b70dff6 &&
       phpize && ./configure && make -j"$(nproc)" && make install &&
       echo "extension=redis.so" > /usr/local/etc/php/conf.d/redis.ini
     )
