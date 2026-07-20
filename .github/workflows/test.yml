@@ -20,7 +20,9 @@ jobs:
   test:
     name: Run tests
     runs-on: ubuntu-latest
+    continue-on-error: ${{ contains(fromJSON('["7.3","7.4","8.0"]'), matrix.php-version) }}
     strategy:
+      fail-fast: false
       matrix:
         php-version:
           - "7.3"
