@@ -4,11 +4,19 @@ apk add --no-cache unixodbc-dev brotli-dev gmp-dev yaml-dev samba-dev libldap op
     imagemagick-libs unixodbc-dev rabbitmq-c rabbitmq-c-dev mpdecimal-dev gettext gettext-dev imagemagick-dev librdkafka-dev autoconf g++ make icu-dev libpng-dev libjpeg-turbo-dev postgresql-dev libxml2-dev bzip2-dev icu icu-dev libmemcached-dev linux-headers $PHPIZE_DEPS
 
 case $PHP_VERSION in
-  8.6*)
-    echo "Installing pie in place of pecl (pecl is not available yet for this alpha release)"
+  8.1*|8.2*|8.3*|8.4*|8.5*|8.6*)
+    echo "Installing pie in place of pecl for PHP $PHP_VERSION"
     curl -fsSL -o /usr/local/bin/pie https://github.com/php/pie/releases/latest/download/pie.phar
     chmod +x /usr/local/bin/pie
-    # todo: Temp workaround for PHP 8.6.
+    ;;
+  *)
+    pecl channel-update pecl.php.net
+    ;;
+esac
+
+case $PHP_VERSION in
+  8.6*)
+    # todo: Temp workaround for PHP 8.6 (pie's requirement checker doesn't recognize this alpha release yet).
     export BOX_REQUIREMENT_CHECKER=0
     apk add --no-cache libtool
     cat > /root/php86-pie-compat.h <<'EOC'
@@ -30,9 +38,6 @@ case $PHP_VERSION in
 EOC
     export CFLAGS="${CFLAGS:-} -DXtOffsetOf=offsetof -Dzval_dtor=zval_ptr_dtor_nogc -include /root/php86-pie-compat.h"
     ;;
-  *)
-    pecl channel-update pecl.php.net
-    ;;
 esac
 
 case $PHP_VERSION in
@@ -45,6 +50,9 @@ case $PHP_VERSION in
   8.5*|8.6*)
     echo "Skipping mongo db driver for PHP $PHP_VERSION"
     ;;
+  8.1*|8.2*|8.3*|8.4*)
+    pie install mongodb/mongodb-extension
+    ;;
   *)
     echo "yes" | pecl install mongodb
     ;;
@@ -53,6 +61,9 @@ esac
 case $PHP_VERSION in
   8.5*|8.6*)
     echo "Skipping mongodb for PHP $PHP_VERSION"
+    ;;
+  8.1*|8.2*|8.3*|8.4*)
+    echo "mongodb already enabled by pie for PHP $PHP_VERSION"
     ;;
   *)
     docker-php-ext-enable mongodb
@@ -69,11 +80,13 @@ case $PHP_VERSION in
     docker-php-ext-enable swoole
     ;;
   8.1*)
-    echo "" | pecl install swoole-6.1.8
-    docker-php-ext-enable swoole
+    pie install swoole/swoole:6.1.8
     ;;
   8.5*|8.6*)
     echo "Skipping swoole for PHP $PHP_VERSION"
+    ;;
+  8.2*|8.3*|8.4*)
+    pie install swoole/swoole
     ;;
   *)
     echo "" | pecl install swoole
@@ -85,10 +98,10 @@ case $PHP_VERSION in
   7.3)
     yes | pecl install ds-1.4.0
     ;;
-  7.4|8.0|8.1)
+  7.4|8.0)
     yes | pecl install ds-1.6.0
     ;;
-  8.6*)
+  8.1*|8.2*|8.3*|8.4*|8.5*|8.6*)
     pie install php-ds/ext-ds
     ;;
   *)
@@ -117,6 +130,9 @@ case $PHP_VERSION in
     )
     rm -rf /usr/src/igbinary
     ;;
+  8.1*|8.2*|8.3*|8.4*)
+    pie install igbinary/igbinary
+    ;;
   *)
     yes | pecl install igbinary
     ;;
@@ -133,13 +149,16 @@ case $PHP_VERSION in
     )
     rm -rf /usr/src/mailparse
     ;;
+  8.1*|8.2*|8.3*|8.4*)
+    pie install pecl/mailparse
+    ;;
   *)
     yes | pecl install mailparse
     ;;
 esac
 
 case $PHP_VERSION in
-  8.6*)
+  8.1*|8.2*|8.3*|8.4*|8.5*|8.6*)
     pie install apcu/apcu
     pie install rdkafka/rdkafka
     pie install pecl/yaml
@@ -155,10 +174,10 @@ case $PHP_VERSION in
   7.3)
     yes | pecl install decimal-1.5.1
     ;;
-  7.4|8.0|8.1)
+  7.4|8.0)
     yes | pecl install decimal-1.5.3
     ;;
-  8.6*)
+  8.1*|8.2*|8.3*|8.4*|8.5*|8.6*)
     pie install php-decimal/ext-decimal
     ;;
   *)
@@ -170,7 +189,7 @@ case $PHP_VERSION in
   7.3)
     echo "" | pecl install amqp-1.11.0
     ;;
-  8.6*)
+  8.1*|8.2*|8.3*|8.4*|8.5*|8.6*)
     pie install php-amqp/php-amqp
     ;;
   *)
@@ -190,6 +209,9 @@ esac
 case $PHP_VERSION in
   8.5*|8.6*)
     echo "Skipping memcached for PHP $PHP_VERSION"
+    ;;
+  8.1*|8.2*|8.3*|8.4*)
+    pie install php-memcached/php-memcached
     ;;
   *)
     echo "" | pecl install memcached
@@ -228,6 +250,9 @@ case $PHP_VERSION in
     )
     rm -rf /usr/src/phpredis
     ;;
+  8.1*|8.2*|8.3*|8.4*)
+    pie install phpredis/phpredis
+    ;;
   8.*)
     mkdir -p /usr/src/php/ext/redis && curl -fsSL https://pecl.php.net/get/redis | tar xvz -C "/usr/src/php/ext/redis" --strip 1 && docker-php-ext-install redis
     ;;
@@ -243,8 +268,8 @@ php -m | grep -q '^intl$' || docker-php-ext-install intl
 php -m | grep -q '^gettext$' || docker-php-ext-install gettext
 php -m | grep -q '^sockets$' || docker-php-ext-install sockets
 case $PHP_VERSION in
-  8.6*)
-    echo "ds, yaml, decimal, uuid, msgpack, and amqp were already enabled by pie, and mailparse by its own install step, for PHP $PHP_VERSION"
+  8.1*|8.2*|8.3*|8.4*|8.5*|8.6*)
+    echo "ds, yaml, decimal, uuid, msgpack, and amqp were already enabled by pie, and mailparse by pie or its own install step, for PHP $PHP_VERSION"
     ;;
   *)
     docker-php-ext-enable ds yaml decimal uuid mailparse msgpack amqp
@@ -307,13 +332,16 @@ case $PHP_VERSION in
     )
     rm -rf /usr/src/imagick
     ;;
+  8.1*|8.2*|8.3*|8.4*|8.5*)
+    pie install imagick/imagick
+    ;;
   *)
     yes | pecl install imagick
     ;;
 esac
 
 case $PHP_VERSION in
-  8.6*)
+  8.1*|8.2*|8.3*|8.4*|8.5*|8.6*)
     php -m | grep -q '^imagick$' || docker-php-ext-enable imagick
     ;;
   *)
@@ -348,7 +376,7 @@ esac
 docker-php-ext-install gmp ldap xsl mysqli calendar gd pdo_mysql pdo_pgsql zip bcmath soap exif bz2 pcntl
 
 case $PHP_VERSION in
-  8.6*)
+  8.1*|8.2*|8.3*|8.4*|8.5*|8.6*)
     echo "rdkafka and apcu were already enabled by pie for PHP $PHP_VERSION"
     ;;
   *)
