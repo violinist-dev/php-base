@@ -8,6 +8,8 @@ case $PHP_VERSION in
     echo "Installing pie in place of pecl for PHP $PHP_VERSION"
     curl -fsSL -o /usr/local/bin/pie https://github.com/php/pie/releases/latest/download/pie.phar
     chmod +x /usr/local/bin/pie
+    # libtool is a build dependency for several extensions pie compiles from source.
+    apk add --no-cache libtool
     ;;
   *)
     pecl channel-update pecl.php.net
@@ -18,7 +20,6 @@ case $PHP_VERSION in
   8.6*)
     # todo: Temp workaround for PHP 8.6 (pie's requirement checker doesn't recognize this alpha release yet).
     export BOX_REQUIREMENT_CHECKER=0
-    apk add --no-cache libtool
     cat > /root/php86-pie-compat.h <<'EOC'
 #ifndef EMPTY_SWITCH_DEFAULT_CASE
 #define EMPTY_SWITCH_DEFAULT_CASE()
@@ -131,7 +132,8 @@ case $PHP_VERSION in
     rm -rf /usr/src/igbinary
     ;;
   8.1*|8.2*|8.3*|8.4*)
-    pie install igbinary/igbinary
+    # igbinary/igbinary has no stable-tagged release PIE can resolve; use the PIE-compatible mirror instead.
+    pie install pie-extensions/igbinary
     ;;
   *)
     yes | pecl install igbinary
