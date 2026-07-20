@@ -23,8 +23,9 @@ jobs:
     permissions:
       contents: read
       packages: write
+    continue-on-error: ${{ contains(fromJSON('["7.3","7.4","8.0"]'), matrix.php-version) }}
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         php-version:
           - "7.3"
