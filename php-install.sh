@@ -99,10 +99,11 @@ case $PHP_VERSION in
   7.3)
     yes | pecl install ds-1.4.0
     ;;
-  7.4|8.0)
+  7.4|8.0|8.1)
+    # php-ds/ext-ds has no pie-installable release below PHP 8.2; keep pecl for 8.1.
     yes | pecl install ds-1.6.0
     ;;
-  8.1*|8.2*|8.3*|8.4*|8.5*|8.6*)
+  8.2*|8.3*|8.4*|8.5*|8.6*)
     pie install php-ds/ext-ds
     ;;
   *)
@@ -131,8 +132,9 @@ case $PHP_VERSION in
     )
     rm -rf /usr/src/igbinary
     ;;
-  8.1*|8.2*|8.3*|8.4*)
-    # igbinary/igbinary has no stable-tagged release PIE can resolve; use the PIE-compatible mirror instead.
+  8.2*|8.3*|8.4*)
+    # igbinary/igbinary has no stable-tagged release PIE can resolve; use the PIE-compatible mirror instead
+    # (pie-extensions/igbinary requires PHP >= 8.2, so 8.1 falls through to pecl below).
     pie install pie-extensions/igbinary
     ;;
   *)
@@ -270,7 +272,11 @@ php -m | grep -q '^intl$' || docker-php-ext-install intl
 php -m | grep -q '^gettext$' || docker-php-ext-install gettext
 php -m | grep -q '^sockets$' || docker-php-ext-install sockets
 case $PHP_VERSION in
-  8.1*|8.2*|8.3*|8.4*|8.5*|8.6*)
+  8.1*)
+    echo "yaml, decimal, uuid, msgpack, and amqp were already enabled by pie, and mailparse by pie, for PHP $PHP_VERSION"
+    docker-php-ext-enable ds
+    ;;
+  8.2*|8.3*|8.4*|8.5*|8.6*)
     echo "ds, yaml, decimal, uuid, msgpack, and amqp were already enabled by pie, and mailparse by pie or its own install step, for PHP $PHP_VERSION"
     ;;
   *)
