@@ -36,9 +36,6 @@ EOC
 esac
 
 case $PHP_VERSION in
-  7.3)
-    yes | pecl install mongodb-1.16.2
-    ;;
   7.4|8.0)
     echo "yes" | pecl install mongodb-1.20.1
     ;;
@@ -82,9 +79,6 @@ case $PHP_VERSION in
 esac
 
 case $PHP_VERSION in
-  7.3)
-    yes | pecl install ds-1.4.0
-    ;;
   7.4|8.0|8.1)
     yes | pecl install ds-1.6.0
     ;;
@@ -152,9 +146,6 @@ case $PHP_VERSION in
 esac
 
 case $PHP_VERSION in
-  7.3)
-    yes | pecl install decimal-1.5.1
-    ;;
   7.4|8.0|8.1)
     yes | pecl install decimal-1.5.3
     ;;
@@ -167,9 +158,6 @@ case $PHP_VERSION in
 esac
 
 case $PHP_VERSION in
-  7.3)
-    echo "" | pecl install amqp-1.11.0
-    ;;
   8.6*)
     pie install php-amqp/php-amqp
     ;;
@@ -198,10 +186,7 @@ case $PHP_VERSION in
 esac
 
 case $PHP_VERSION in
-  7.2)
-    yes | pecl install sqlsrv-5.8.1 pdo_sqlsrv-5.8.1
-    ;;
-  7.3|7.4)
+  7.4)
     yes | pecl install sqlsrv-5.10.1 pdo_sqlsrv-5.10.1
     ;;
   8.0)
