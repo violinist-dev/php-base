@@ -59,7 +59,7 @@ jobs:
         run: |
           USE_VERSION=$PHP_VERSION
           if [ "$PHP_VERSION" == "8.6" ]; then
-            USE_VERSION="8.6.0alpha2"
+            USE_VERSION="8.6.0alpha3"
           fi
           echo "name=$USE_VERSION" >> "$GITHUB_OUTPUT"
       - name: Build and push Docker image
