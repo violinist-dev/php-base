@@ -48,9 +48,9 @@ jobs:
 
       - name: Build test image
         if: matrix.php-version == '8.6'
-        run: docker build -t php-base --build-arg PHP_VERSION=$PHP_VERSION .
-        env:
-          PHP_VERSION: '8.6.0alpha2'
+        run: |
+          PHP_VERSION=$(cat unstable-tag)
+          docker build -t php-base --build-arg PHP_VERSION=$PHP_VERSION .
 
       - name: Pull main image for size comparison
         id: pull_main
