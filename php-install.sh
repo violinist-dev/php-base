@@ -158,15 +158,29 @@ case $PHP_VERSION in
 esac
 
 case $PHP_VERSION in
-  8.1*|8.2*|8.3*|8.4*|8.5*|8.6*)
+  8.6*)
+    # todo: -v surfaces the real compiler/make error in the CI log; pie
+    # otherwise buffers build output and, on failure, dumps it to a
+    # temp file inside the (already-gone) build container instead.
+    pie install -v apcu/apcu
+    ;;
+  8.1*|8.2*|8.3*|8.4*|8.5*)
     pie install apcu/apcu
+    ;;
+  *)
+    yes | pecl install apcu
+    ;;
+esac
+
+case $PHP_VERSION in
+  8.1*|8.2*|8.3*|8.4*|8.5*|8.6*)
     pie install rdkafka/rdkafka
     pie install pecl/yaml
     pie install pecl/uuid
     pie install msgpack/msgpack-php
     ;;
   *)
-    yes | pecl install apcu rdkafka yaml uuid msgpack
+    yes | pecl install rdkafka yaml uuid msgpack
     ;;
 esac
 
