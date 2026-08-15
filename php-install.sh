@@ -158,20 +158,9 @@ case $PHP_VERSION in
 esac
 
 case $PHP_VERSION in
-  8.6*)
-    # apcu's latest tagged release (pie/pecl install this) predates the
-    # upstream fix for PHP 8.6's php_verror() signature change, so build
-    # from the default branch instead, same as the other 8.6 workarounds
-    # below.
-    php -m | grep -q '^apcu$' || (
-      git clone --depth=1 https://github.com/krakjoe/apcu.git /usr/src/apcu &&
-      cd /usr/src/apcu &&
-      phpize && ./configure --enable-apcu && make -j"$(nproc)" && make install &&
-      echo "extension=apcu.so" > /usr/local/etc/php/conf.d/apcu.ini
-    )
-    rm -rf /usr/src/apcu
-    ;;
-  8.1*|8.2*|8.3*|8.4*|8.5*)
+  8.1*|8.2*|8.3*|8.4*|8.5*|8.6*)
+    # todo: experiment, revert if CI shows apcu still fails to build
+    # against PHP 8.6.0beta1 via pie's tagged release.
     pie install apcu/apcu
     ;;
   *)
@@ -393,7 +382,7 @@ docker-php-ext-install gmp ldap xsl mysqli calendar gd pdo_mysql pdo_pgsql zip b
 
 case $PHP_VERSION in
   8.1*|8.2*|8.3*|8.4*|8.5*|8.6*)
-    echo "rdkafka was already enabled by pie, and apcu by pie or its own install step, for PHP $PHP_VERSION"
+    echo "rdkafka and apcu were already enabled by pie for PHP $PHP_VERSION"
     ;;
   *)
     docker-php-ext-enable rdkafka apcu
