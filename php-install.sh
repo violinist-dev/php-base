@@ -134,9 +134,14 @@ case $PHP_VERSION in
     rm -rf /usr/src/igbinary
     ;;
   8.6*)
+    # PHP 8.6 also changed the unserialize_callback_func INI global from
+    # char* to zend_string*, so patch igbinary's two remaining direct
+    # reads of it.
     php -m | grep -q '^igbinary$' || (
       git clone --depth=1 https://github.com/igbinary/igbinary.git /usr/src/igbinary &&
       cd /usr/src/igbinary &&
+      sed -i 's/user_func_name = PG(unserialize_callback_func);/user_func_name = PG(unserialize_callback_func) ? ZSTR_VAL(PG(unserialize_callback_func)) : NULL;/' src/php7/igbinary.c &&
+      sed -i "s/\"Function %s() hasn't defined the class it was called for\", PG(unserialize_callback_func));/\"Function %s() hasn't defined the class it was called for\", user_func_name);/" src/php7/igbinary.c &&
       export CFLAGS="${CFLAGS:-} -DXtOffsetOf=offsetof -Dzval_dtor=zval_ptr_dtor_nogc" &&
       phpize && ./configure && make -j"$(nproc)" && make install &&
       echo "extension=igbinary.so" > /usr/local/etc/php/conf.d/igbinary.ini
