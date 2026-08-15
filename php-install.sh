@@ -100,10 +100,19 @@ case $PHP_VERSION in
     yes | pecl install ds-1.6.0
     ;;
   8.6*)
-    # todo: -v surfaces the real compiler/make error in the CI log; pie
-    # otherwise buffers build output and, on failure, dumps it to a
-    # temp file inside the (already-gone) build container instead.
-    pie install -v php-ds/ext-ds
+    # php-ds/ext-ds calls the removed zend_parse_parameter() (the
+    # single-argument variant; zend_parse_parameters() is unrelated and
+    # still exists). Patch it to use the still-available
+    # zend_parse_arg_long() inline helper instead, which is what
+    # zend_parse_parameter() used internally for the "l" spec anyway.
+    php -m | grep -q '^ds$' || (
+      git clone --depth=1 https://github.com/php-ds/ext-ds.git /usr/src/ext-ds &&
+      cd /usr/src/ext-ds &&
+      sed -i 's/zend_parse_parameter(ZEND_PARSE_PARAMS_QUIET, 1, offset, "l", \&index) == FAILURE/!zend_parse_arg_long(offset, \&index, NULL, false, 1)/' src/php/handlers/php_seq_handlers.c &&
+      phpize && ./configure --enable-ds && make -j"$(nproc)" && make install &&
+      echo "extension=ds.so" > /usr/local/etc/php/conf.d/ds.ini
+    )
+    rm -rf /usr/src/ext-ds
     ;;
   8.2*|8.3*|8.4*|8.5*)
     pie install php-ds/ext-ds
