@@ -99,7 +99,13 @@ case $PHP_VERSION in
     # php-ds/ext-ds has no pie-installable release below PHP 8.2; keep pecl for 8.1.
     yes | pecl install ds-1.6.0
     ;;
-  8.2*|8.3*|8.4*|8.5*|8.6*)
+  8.6*)
+    # todo: -v surfaces the real compiler/make error in the CI log; pie
+    # otherwise buffers build output and, on failure, dumps it to a
+    # temp file inside the (already-gone) build container instead.
+    pie install -v php-ds/ext-ds
+    ;;
+  8.2*|8.3*|8.4*|8.5*)
     pie install php-ds/ext-ds
     ;;
   *)
