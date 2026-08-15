@@ -135,13 +135,16 @@ case $PHP_VERSION in
     ;;
   8.6*)
     # PHP 8.6 also changed the unserialize_callback_func INI global from
-    # char* to zend_string*, so patch igbinary's two remaining direct
-    # reads of it.
+    # char* to zend_string*, breaking igbinary's two direct reads of it.
+    # Cherry-pick upstream's own fix (igbinary/igbinary#419) rather than
+    # patching it ourselves: their fix also takes its own owned copy of
+    # the string, since the naive fix is a use-after-free if the
+    # unserialize callback itself reassigns unserialize_callback_func.
     php -m | grep -q '^igbinary$' || (
       git clone --depth=1 https://github.com/igbinary/igbinary.git /usr/src/igbinary &&
       cd /usr/src/igbinary &&
-      sed -i 's/user_func_name = PG(unserialize_callback_func);/user_func_name = PG(unserialize_callback_func) ? ZSTR_VAL(PG(unserialize_callback_func)) : NULL;/' src/php7/igbinary.c &&
-      sed -i "s/\"Function %s() hasn't defined the class it was called for\", PG(unserialize_callback_func));/\"Function %s() hasn't defined the class it was called for\", user_func_name);/" src/php7/igbinary.c &&
+      git fetch --depth=5 origin pull/419/head &&
+      git cherry-pick d4a6ded9ca6b3d7eec069de1891d03c5bc14c233 --no-commit &&
       export CFLAGS="${CFLAGS:-} -DXtOffsetOf=offsetof -Dzval_dtor=zval_ptr_dtor_nogc" &&
       phpize && ./configure && make -j"$(nproc)" && make install &&
       echo "extension=igbinary.so" > /usr/local/etc/php/conf.d/igbinary.ini
