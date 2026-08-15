@@ -1,7 +1,7 @@
-ARG PHP_VERSION
+ARG PHP_VERSION=8.3
 
 FROM php:${PHP_VERSION}-alpine
-MAINTAINER eiriksm <eirik@morland.no>
+LABEL org.opencontainers.image.authors="eiriksm <eirik@morland.no>"
 
 ENV COMPOSER_DISCARD_CHANGES=1
 ENV COMPOSER_MEMORY_LIMIT=-1
