@@ -99,7 +99,22 @@ case $PHP_VERSION in
     # php-ds/ext-ds has no pie-installable release below PHP 8.2; keep pecl for 8.1.
     yes | pecl install ds-1.6.0
     ;;
-  8.2*|8.3*|8.4*|8.5*|8.6*)
+  8.6*)
+    # php-ds/ext-ds calls the removed zend_parse_parameter() (the
+    # single-argument variant; zend_parse_parameters() is unrelated and
+    # still exists). Patch it to use the still-available
+    # zend_parse_arg_long() inline helper instead, which is what
+    # zend_parse_parameter() used internally for the "l" spec anyway.
+    php -m | grep -q '^ds$' || (
+      git clone --depth=1 https://github.com/php-ds/ext-ds.git /usr/src/ext-ds &&
+      cd /usr/src/ext-ds &&
+      sed -i 's/zend_parse_parameter(ZEND_PARSE_PARAMS_QUIET, 1, offset, "l", \&index) == FAILURE/!zend_parse_arg_long(offset, \&index, NULL, false, 1)/' src/php/handlers/php_seq_handlers.c &&
+      phpize && ./configure --enable-ds && make -j"$(nproc)" && make install &&
+      echo "extension=ds.so" > /usr/local/etc/php/conf.d/ds.ini
+    )
+    rm -rf /usr/src/ext-ds
+    ;;
+  8.2*|8.3*|8.4*|8.5*)
     pie install php-ds/ext-ds
     ;;
   *)
@@ -119,9 +134,17 @@ case $PHP_VERSION in
     rm -rf /usr/src/igbinary
     ;;
   8.6*)
+    # PHP 8.6 also changed the unserialize_callback_func INI global from
+    # char* to zend_string*, breaking igbinary's two direct reads of it.
+    # Cherry-pick upstream's own fix (igbinary/igbinary#419) rather than
+    # patching it ourselves: their fix also takes its own owned copy of
+    # the string, since the naive fix is a use-after-free if the
+    # unserialize callback itself reassigns unserialize_callback_func.
     php -m | grep -q '^igbinary$' || (
       git clone --depth=1 https://github.com/igbinary/igbinary.git /usr/src/igbinary &&
       cd /usr/src/igbinary &&
+      git fetch --depth=5 origin pull/419/head &&
+      git cherry-pick d4a6ded9ca6b3d7eec069de1891d03c5bc14c233 --no-commit &&
       export CFLAGS="${CFLAGS:-} -DXtOffsetOf=offsetof -Dzval_dtor=zval_ptr_dtor_nogc" &&
       phpize && ./configure && make -j"$(nproc)" && make install &&
       echo "extension=igbinary.so" > /usr/local/etc/php/conf.d/igbinary.ini
@@ -159,10 +182,10 @@ esac
 
 case $PHP_VERSION in
   8.6*)
-    # apcu's latest tagged release (pie/pecl install this) predates the
-    # upstream fix for PHP 8.6's php_verror() signature change, so build
-    # from the default branch instead, same as the other 8.6 workarounds
-    # below.
+    # Confirmed still needed against 8.6.0beta1: apcu's latest tagged
+    # release still calls the removed php_verror() with the old
+    # 5-argument signature. Fixed upstream on the default branch
+    # (unreleased), so build from there instead.
     php -m | grep -q '^apcu$' || (
       git clone --depth=1 https://github.com/krakjoe/apcu.git /usr/src/apcu &&
       cd /usr/src/apcu &&
@@ -184,10 +207,33 @@ case $PHP_VERSION in
     pie install rdkafka/rdkafka
     pie install pecl/yaml
     pie install pecl/uuid
+    ;;
+  *)
+    yes | pecl install rdkafka yaml uuid
+    ;;
+esac
+
+case $PHP_VERSION in
+  8.6*)
+    # msgpack-php also reads unserialize_callback_func as a char* (now
+    # zend_string* on PHP 8.6). Unlike igbinary, it only reads the
+    # global once, before invoking the callback, so a plain ZSTR_VAL /
+    # ZVAL_STR_COPY swap is safe here -- no owned-copy dance needed.
+    php -m | grep -q '^msgpack$' || (
+      git clone --depth=1 https://github.com/msgpack/msgpack-php.git /usr/src/msgpack-php &&
+      cd /usr/src/msgpack-php &&
+      sed -i "s/(PG(unserialize_callback_func)\[0\] == '\\\\0')) {/(ZSTR_LEN(PG(unserialize_callback_func)) == 0)) {/" msgpack_unpack.c &&
+      sed -i 's/ZVAL_STRING(&user_func, PG(unserialize_callback_func));/ZVAL_STR_COPY(\&user_func, PG(unserialize_callback_func));/' msgpack_unpack.c &&
+      phpize && ./configure --with-msgpack && make -j"$(nproc)" && make install &&
+      echo "extension=msgpack.so" > /usr/local/etc/php/conf.d/msgpack.ini
+    )
+    rm -rf /usr/src/msgpack-php
+    ;;
+  8.1*|8.2*|8.3*|8.4*|8.5*)
     pie install msgpack/msgpack-php
     ;;
   *)
-    yes | pecl install rdkafka yaml uuid msgpack
+    yes | pecl install msgpack
     ;;
 esac
 
