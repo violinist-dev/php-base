@@ -207,10 +207,24 @@ case $PHP_VERSION in
     pie install rdkafka/rdkafka
     pie install pecl/yaml
     pie install pecl/uuid
+    ;;
+  *)
+    yes | pecl install rdkafka yaml uuid
+    ;;
+esac
+
+case $PHP_VERSION in
+  8.6*)
+    # todo: -v surfaces the real compiler/make error in the CI log; pie
+    # otherwise buffers build output and, on failure, dumps it to a
+    # temp file inside the (already-gone) build container instead.
+    pie install -v msgpack/msgpack-php
+    ;;
+  8.1*|8.2*|8.3*|8.4*|8.5*)
     pie install msgpack/msgpack-php
     ;;
   *)
-    yes | pecl install rdkafka yaml uuid msgpack
+    yes | pecl install msgpack
     ;;
 esac
 
