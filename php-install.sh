@@ -215,10 +215,19 @@ esac
 
 case $PHP_VERSION in
   8.6*)
-    # todo: -v surfaces the real compiler/make error in the CI log; pie
-    # otherwise buffers build output and, on failure, dumps it to a
-    # temp file inside the (already-gone) build container instead.
-    pie install -v msgpack/msgpack-php
+    # msgpack-php also reads unserialize_callback_func as a char* (now
+    # zend_string* on PHP 8.6). Unlike igbinary, it only reads the
+    # global once, before invoking the callback, so a plain ZSTR_VAL /
+    # ZVAL_STR_COPY swap is safe here -- no owned-copy dance needed.
+    php -m | grep -q '^msgpack$' || (
+      git clone --depth=1 https://github.com/msgpack/msgpack-php.git /usr/src/msgpack-php &&
+      cd /usr/src/msgpack-php &&
+      sed -i "s/(PG(unserialize_callback_func)\[0\] == '\\\\0')) {/(ZSTR_LEN(PG(unserialize_callback_func)) == 0)) {/" msgpack_unpack.c &&
+      sed -i 's/ZVAL_STRING(&user_func, PG(unserialize_callback_func));/ZVAL_STR_COPY(\&user_func, PG(unserialize_callback_func));/' msgpack_unpack.c &&
+      phpize && ./configure --with-msgpack && make -j"$(nproc)" && make install &&
+      echo "extension=msgpack.so" > /usr/local/etc/php/conf.d/msgpack.ini
+    )
+    rm -rf /usr/src/msgpack-php
     ;;
   8.1*|8.2*|8.3*|8.4*|8.5*)
     pie install msgpack/msgpack-php
