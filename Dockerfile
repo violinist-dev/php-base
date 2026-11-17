@@ -16,4 +16,8 @@ COPY --from=composer/composer:latest /usr/bin/composer /usr/bin/composer
 COPY ./php-install.sh /root/
 COPY php-base.ini /usr/local/etc/php/conf.d/
 
-RUN /bin/sh /root/php-install.sh
+# Pass a GitHub token as a build secret (never stored in a layer) so pie's
+# GitHub API calls are authenticated instead of hitting the anonymous rate limit.
+RUN --mount=type=secret,id=github_token,required=false \
+    if [ -s /run/secrets/github_token ]; then export GITHUB_TOKEN="$(cat /run/secrets/github_token)"; fi; \
+    /bin/sh /root/php-install.sh

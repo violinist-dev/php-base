@@ -42,15 +42,18 @@ jobs:
 
       - name: Build test image
         if: matrix.php-version != '8.6'
-        run: docker build -t php-base --build-arg PHP_VERSION=$PHP_VERSION .
+        run: docker build -t php-base --secret id=github_token,env=GITHUB_TOKEN --build-arg PHP_VERSION=$PHP_VERSION .
         env:
           PHP_VERSION: ${{ matrix.php-version }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build test image
         if: matrix.php-version == '8.6'
         run: |
           PHP_VERSION=$(cat unstable-tag)
-          docker build -t php-base --build-arg PHP_VERSION=$PHP_VERSION .
+          docker build -t php-base --secret id=github_token,env=GITHUB_TOKEN --build-arg PHP_VERSION=$PHP_VERSION .
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Pull main image for size comparison
         id: pull_main

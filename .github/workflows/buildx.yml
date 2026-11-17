@@ -74,6 +74,8 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             PHP_VERSION=${{ steps.image.outputs.name }}
+          secrets: |
+            github_token=${{ secrets.GITHUB_TOKEN }}
       - name: Wait to retry
         if: steps.buildx1.outcome != 'success'
         run: |
@@ -89,6 +91,8 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             PHP_VERSION=${{ steps.image.outputs.name }}
+          secrets: |
+            github_token=${{ secrets.GITHUB_TOKEN }}
       -
         name: Clear
         if: always() && github.event_name != 'pull_request'
