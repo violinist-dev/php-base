@@ -41,7 +41,15 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Build test image
-        run: docker build -t php-base --secret id=github_token,env=GITHUB_TOKEN --build-arg PHP_VERSION=$PHP_VERSION .
+        run: |
+          USE_VERSION=$PHP_VERSION
+          # If unstable-tag holds a prerelease of this matrix version
+          # (e.g. 8.7.0alpha1 for "8.7"), build from that tag instead.
+          UNSTABLE_TAG=$(tr -d '[:space:]' < unstable-tag)
+          if [ -n "$UNSTABLE_TAG" ] && [[ "$UNSTABLE_TAG" == "$PHP_VERSION".* ]]; then
+            USE_VERSION=$UNSTABLE_TAG
+          fi
+          docker build -t php-base --secret id=github_token,env=GITHUB_TOKEN --build-arg PHP_VERSION=$USE_VERSION .
         env:
           PHP_VERSION: ${{ matrix.php-version }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

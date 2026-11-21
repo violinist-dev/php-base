@@ -58,6 +58,12 @@ jobs:
           PHP_VERSION: ${{ matrix.php-version }}
         run: |
           USE_VERSION=$PHP_VERSION
+          # If unstable-tag holds a prerelease of this matrix version
+          # (e.g. 8.7.0alpha1 for "8.7"), build from that tag instead.
+          UNSTABLE_TAG=$(tr -d '[:space:]' < unstable-tag)
+          if [ -n "$UNSTABLE_TAG" ] && [[ "$UNSTABLE_TAG" == "$PHP_VERSION".* ]]; then
+            USE_VERSION=$UNSTABLE_TAG
+          fi
           echo "name=$USE_VERSION" >> "$GITHUB_OUTPUT"
       - name: Build and push Docker image
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7
