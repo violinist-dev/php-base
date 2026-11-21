@@ -42,15 +42,34 @@ jobs:
 
       - name: Build test image
         if: matrix.php-version != '8.6'
-        run: docker build -t php-base --build-arg PHP_VERSION=$PHP_VERSION .
+        run: docker build -t php-base --secret id=github_token,env=GITHUB_TOKEN --build-arg PHP_VERSION=$PHP_VERSION .
         env:
           PHP_VERSION: ${{ matrix.php-version }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build test image
         if: matrix.php-version == '8.6'
         run: |
           PHP_VERSION=$(cat unstable-tag)
-          docker build -t php-base --build-arg PHP_VERSION=$PHP_VERSION .
+          docker build -t php-base --secret id=github_token,env=GITHUB_TOKEN --build-arg PHP_VERSION=$PHP_VERSION .
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check the GitHub token did not leak into the image
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          leaked=0
+          docker history --no-trunc php-base | grep -qF "$GITHUB_TOKEN" && leaked=1
+          docker inspect php-base | grep -qF "$GITHUB_TOKEN" && leaked=1
+          cid=$(docker create php-base)
+          docker export "$cid" | grep -aqF "$GITHUB_TOKEN" && leaked=1
+          docker rm -f "$cid" > /dev/null
+          if [ "$leaked" != "0" ]; then
+            echo "GitHub token found in the built image"
+            exit 1
+          fi
+          echo "No token found in image history, config or filesystem"
 
       - name: Pull main image for size comparison
         id: pull_main
