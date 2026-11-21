@@ -58,9 +58,6 @@ jobs:
           PHP_VERSION: ${{ matrix.php-version }}
         run: |
           USE_VERSION=$PHP_VERSION
-          if [ "$PHP_VERSION" == "8.6" ]; then
-            USE_VERSION=$(cat unstable-tag)
-          fi
           echo "name=$USE_VERSION" >> "$GITHUB_OUTPUT"
       - name: Build and push Docker image
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7

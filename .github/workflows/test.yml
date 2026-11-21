@@ -41,18 +41,9 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Build test image
-        if: matrix.php-version != '8.6'
         run: docker build -t php-base --secret id=github_token,env=GITHUB_TOKEN --build-arg PHP_VERSION=$PHP_VERSION .
         env:
           PHP_VERSION: ${{ matrix.php-version }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build test image
-        if: matrix.php-version == '8.6'
-        run: |
-          PHP_VERSION=$(cat unstable-tag)
-          docker build -t php-base --secret id=github_token,env=GITHUB_TOKEN --build-arg PHP_VERSION=$PHP_VERSION .
-        env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Check the GitHub token did not leak into the image
